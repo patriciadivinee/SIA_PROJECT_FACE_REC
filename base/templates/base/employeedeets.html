@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Details</title>
+</head>
+<body>
+    <center>
+        {% if employee.emp_image %}
+            <img src="/media/{{ employee.emp_image }}" class="img img-responsive" style="width: 200px; height: 200px;">
+        {% endif %}
+    </center>
+    <br>
+    <p>Employee ID: {{ employee.emp_id }}</p>
+    <p>Full Name: {{ employee.emp_fname }}  {{ employee.emp_lname }}</p>
+    <p>Gender: {{ employee.emp_gender }}</p>
+    <p>Date of Birth: {{ employee.emp_dob }}</p>
+    <p>Mobile No.: {{ employee.emp_mobile }}</p>
+    <p>Email Address: {{ employee.emp_email }}</p>
+    <p>Address: {{ employee.emp_address }}</p>
+    
+</body>
+</html>

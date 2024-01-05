@@ -1,0 +1,127 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="d-flex align-items-center pt-2">
+    <div class="mx-auto col-10 col-md-8 col-lg-6 px-5 py-4 bg-white rounded">
+    <form class="row g-3" action="{% url 'add_supplier' %}" method="POST" enctype="multipart/form-data" id="my-form">
+        {% csrf_token %}
+        <h4>Add Supplier</h4>
+        <div class="col-md-12">
+            <label for="inputProdBrand" class="form-label">Company Name</label>
+                <input type="text" class="form-control" id="inputProdBrand" placeholder="Enter Company Name" name="sup_company" required>
+                </div>
+                <div class="col-6">
+                <label for="inputProdName" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="inputProdName" placeholder="Enter First Name" name="sup_fname" required>
+                </div>
+            <div class="col-6">
+                <label for="inputLastName" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="inputLastName" placeholder="Enter Last Name" name="sup_lname" required>
+            </div>
+            <div class="col-12">
+                <label for="inputCat" class="form-label">Location</label>
+                <select id="inputUnit" class="form-select"  name="sup_loc" required> 
+                     <option>Abra</option>
+                    <option>Agusan del Norte</option>
+                    <option>Agusan del Sur</option>
+                    <option>Aklan</option>
+                    <option>Albay</option>
+                    <option>Antique</option>
+                    <option>Apayao</option>
+                    <option>Aurora</option>
+                    <option>Basilan</option>
+                    <option>Bataan</option>
+                    <option>Batanes</option>
+                    <option>Batangas</option>
+                    <option>Benguet</option>
+                    <option>Biliran</option>
+                    <option>Bohol</option>
+                    <option>Bukidnon</option>
+                    <option>Bulacan</option>
+                    <option>Cagayan</option>
+                    <option>Camarines Norte</option>
+                    <option>Camarines Sur</option>
+                    <option>Camiguin</option>
+                    <option>Capiz</option>
+                    <option>Catanduanes</option>
+                    <option>Cavite</option>
+                    <option>Cebu</option>
+                    <option>Cotabato</option>
+                    <option>Davao de Oro (Compostela Valley)</option>
+                    <option>Davao del Norte</option>
+                    <option>Davao del Sur</option>
+                    <option>Davao Occidental</option>
+                    <option>Davao Oriental</option>
+                    <option>Dinagat Islands</option>
+                    <option>Eastern Samar</option>
+                    <option>Guimaras</option>
+                    <option>Ifugao</option>
+                    <option>Ilocos Norte</option>
+                    <option>Ilocos Sur</option>
+                    <option>Iloilo</option>
+                    <option>Isabela</option>
+                    <option>Kalinga</option>
+                    <option>La Union</option>
+                    <option>Laguna</option>
+                    <option>Lanao del Norte</option>
+                    <option>Lanao del Sur</option>
+                    <option>Leyte</option>
+                    <option>Maguindanao</option>
+                    <option>Marinduque</option>
+                    <option>Masbate</option>
+                    <option>Misamis Occidental</option>
+                    <option>Misamis Oriental</option>
+                    <option>Mountain Province</option>
+                    <option>Negros Occidental</option>
+                    <option>Negros Oriental</option>
+                    <option>Northern Samar</option>
+                    <option>Nueva Ecija</option>
+                    <option>Nueva Vizcaya</option>
+                    <option>Occidental Mindoro</option>
+                    <option>Oriental Mindoro</option>
+                    <option>Palawan</option>
+                    <option>Pampanga</option>
+                    <option>Pangasinan</option>
+                    <option>Quezon</option>
+                    <option>Quirino</option>
+                    <option>Rizal</option>
+                    <option>Romblon</option>
+                    <option>Samar</option>
+                    <option>Sarangani</option>
+                    <option>Siquijor</option>
+                    <option>Sorsogon</option>
+                    <option>South Cotabato</option>
+                    <option>Southern Leyte</option>
+                    <option>Sultan Kudarat</option>
+                    <option>Sulu</option>
+                    <option>Surigao del Norte</option>
+                    <option>Surigao del Sur</option>
+                    <option>Tarlac</option>
+                    <option>Tawi-Tawi</option>
+                    <option>Zambales</option>
+                    <option>Zamboanga del Norte</option>
+                    <option>Zamboanga del Sur</option>
+                    <option>Zamboanga Sibugay</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                <label for="inputMobileNumber" class="form-label">Mobile Number</label>
+                <input type="number" class="form-control" id="inputMobileNumber" placeholder="Enter Mobile Number" name="sup_mobile" required>
+            </div>
+            <div class="col-12">
+                <label for="inputEmail" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="inputEmail" placeholder="Enter Email Address" name="sup_email" required>
+            </div>
+            <div class="col-12">
+                <label for="inputFacebookLink" class="form-label">Facebook Link</label>
+                <input type="url" class="form-control" id="inputFacebookLink" placeholder="Enter Facebook Link" name="sup_fb_acc" required>
+            </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+</div>
+</div>
+{% endblock content %}

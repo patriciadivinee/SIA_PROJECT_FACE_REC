@@ -1,0 +1,99 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="d-flex align-items-center">
+    <div class="mx-auto col-10 col-md-8 col-lg-6">
+        <form class="row g-3" action="{% url 'update_employee' emp_id=employee.emp_id %}" method="POST" enctype="multipart/form-data">
+            <h2>Update Account</h2>
+            {% csrf_token %}
+            <br>
+            {% if messages %}
+            <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+            <br>
+            <div class="d-flex justify-content-end mb-3">
+                <div>
+                    <a href="{% url 'viewaccount' %}" class="btn btn-primary" style="margin-right:5px">Back</a>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </div>
+            <br>
+                    <div class="col-md-4">
+                        <label for="firstname" class="form-label">Firstname</label>
+                        <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Firstname" value="{{employee.emp_fname}}" required/>
+                    </div>
+                      <div class="col-md-4">
+                        <label for="lastname" class="form-label">Lastname</label>
+                        <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Lastname" value="{{employee.emp_lname}}" required/>
+                      </div>
+                    <div class="col-md-4">
+                        <label for="gender" class="form-label">Gender</label><br>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="gender" id="male" value="Male" {% if employee.emp_gender == "Male" %} checked {% endif %} required>
+                            <label class="form-check-label" for="male">Male</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="gender" id="female" value="Female" {% if employee.emp_gender == "Female" %} checked{% endif %} required>
+                            <label class="form-check-label" for="female">Female</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dob" class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="dob" name="dob" {% if employee.emp_dob %} value= "{{ employee.emp_dob|date:'Y-m-d' }}" {% endif %} required/>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="mobile" class="form-label">Mobile Number</label>
+                        <input type="number" class="form-control" id="mobile" name="mobile" placeholder="+69XXXXXXXXXX" value="{{employee.emp_mobile}}" required/>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="can_access" class="form-label">Password</label><br>
+                        <input type="text" class="form-control" id="password" name="password" value="{{employee.emp_password}}" readonly required/>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="status" class="form-label">Status</label><br>
+                        <input type="hidden" name="status" value="false">
+                        <input type="checkbox" id="status" name="status" {% if this_user.is_active %} checked {% endif %} value="true">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="staff_admin" class="form-label">Staff/Admin</label><br>
+                        <input type="hidden" name="staff_admin_access" value="false">
+                        <input type="checkbox" id="staff_admin" name="staff_admin_access" {% if this_user.is_staff %} checked {% endif %} value="true">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="superadmin" class="form-label">Superadmin</label><br>
+                        <input type="hidden" name="superadmin_access" value="false">
+                        <input type="checkbox" id="superadmin" name="superadmin_access" {% if this_user.is_superuser %} checked {% endif %} value="true">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="emp_access" class="form-label">Emp Access</label><br>
+                        <input type="hidden" name="emp_access" value="false">
+                        <input type="checkbox" id="emp_access" name="emp_access" {% if this_user.emp_access %} checked {% endif %} value="true">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="emailaddress" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="emailaddress" name="emailaddress" placeholder="beautyki@gmail.com"  value="{{employee.emp_email}}" required/>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="address" name="address" placeholder="Street/Barangay/Municipality/Province" value="{{employee.emp_address }}"required/>
+                      </div>
+                    <div class="col-md-6">
+                        <label for="imagefile" class="form-label">Upload Image</label>
+                        <input type="file" class="form-control" id="imagefile" name="imagefile" placeholder=""/>
+                    </div>
+                    <div class="col-md-6">
+                        {%if employee.emp_image %}
+                        <img src="/media/{{employee.emp_image}}" class="img img-responsive" style="width: 100px; height: 100px;">
+                        {% endif %}
+                    </div>    
+        </form>
+    </div>
+</div>
+<script src="{% static 'scripts/required_validation.js' %}"></script>
+{% endblock content %}

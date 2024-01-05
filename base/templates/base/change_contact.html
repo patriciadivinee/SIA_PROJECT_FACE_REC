@@ -1,0 +1,91 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    .marquee {
+      white-space: nowrap;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+</style>
+<div class="row">
+    <div class="col-sm-6">
+        <div>
+            <div class="bg-white mx-auto my-2 py-4 rounded">
+                <div class="col mx-3 py-2 px-3">
+                    <h4>Contact Persons</h4>
+                    <table id="test" class="table table-bordered table-striped"  style="width:100%;">
+                        <thead>
+                          <tr>
+                            <th>Contact Person Name</th>
+                            <th>Mobile</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% if cont %}
+                          {% for con in cont %}
+                          <tr>
+                              <td class="marquee"> {{ con.cont_per_fname }} {{ con.cont.per_mname }} {{ con.cont_per_lname }}</td>
+                              <td class="marquee"> {{ con.cont_per_mobile }}</td>
+                              <td class="marquee">
+                                <center>
+                                    <center><a href="{% url 'activate_contact' con.cont_per_id %}" class = "btn btn-success">
+                                        <i class = "fa-solid fa-recycle"></i>
+                                    </a>
+                                    </center>
+                           </td>  
+                          </tr>
+                          {% endfor %}
+                          {% else %}
+                          <tr>
+                            <td class="marquee" colspan="8">No data found</td>
+                          </tr>
+                          {% endif %}
+                          </tbody>
+                      </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div>
+            <div class="bg-white mx-2 my-2 py-4 rounded">
+                <div class="py-2 px-3">
+                    <form class="row g-3" action="{% url 'add_contact' sup_id=sup_id %}" method="POST" enctype="multipart/form-data" id="my-form">
+                        {% csrf_token %}
+                        <h4>Add Contact Person</h4>
+                        <div class="col-md-12">
+                            <label for="inputCPFirstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="inputCPFirstName" placeholder="Enter First Name" name="cont_per_fname" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="inputLastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="inputLastName" placeholder="Enter Last Name" name="cont_per_lname" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="inputMobileNumber" class="form-label">Mobile Number</label>
+                            <input type="number" class="form-control" id="inputMobileNumber" placeholder="Enter Mobile Number" name="cont_per_mobile" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="inputEmail" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="inputEmail" placeholder="Enter Email Address" name="cont_per_email" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="inputFacebookLink" class="form-label">Facebook Link</label>
+                            <input type="url" class="form-control" id="inputFacebookLink" placeholder="Enter Facebook Link" name="cont_per_fb_acc" required>
+                        </div>
+                        <div class="col-6">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                        <div class="col-6 d-flex justify-content-end">
+                            <button type="button" onclick="window.history.back()" class="btn btn-primary">Back</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

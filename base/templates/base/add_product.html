@@ -1,0 +1,57 @@
+{% extends "base/base.html" %}    
+
+{% block content %}
+    <!-- Main Component -->
+    <div class="d-flex align-items-center pt-4">
+        <div class="mx-auto col-10 col-md-8 col-lg-6 p-5 bg-white rounded">
+            <form class="row g-3" method="post" action="{% url 'add_product' %}">
+              {% csrf_token %}
+              <div class="col-12">
+                <label for="inputProdBrand" class="form-label">Product Brand</label>
+                <input type="text" class="form-control" id="inputProdBrand" name="prod_brand" placeholder="Enter Product Brand" required>
+              </div>
+              <div class="col-md-7">
+                <label for="inputProdName" class="form-label">Product Name</label>
+                <input type="text" class="form-control" name="prod_name" id="inputProdName" placeholder="Enter Product Name" required>
+              </div>
+              <div class="col-md-3">
+                <label for="inputPackSize" class="form-label">Pack Size</label>
+                <input type="number" class="form-control" name="prod_pack_size" id="inputPackSize" min="1" required>
+              </div>
+              <div class="col-md-2">
+                <select id="inputUnit" class="form-select" name="unit" style="margin-top: 32px;">
+                  <option selected>ml</option>
+                  <option>g</option>
+                </select>
+              </div>
+              <div class="col-md-7">
+                <label for="inputCat" class="form-label">Category</label>
+                <select class="form-select border border-0" name="cat_id" style="border-radius: 20px; margin-left: 2px;" aria-label="Default select example" required>
+                  <option selected disabled>---Select Category---</option>
+                  {% for cat in cat_list %}
+                  <option value="{{ cat.cat_id }}">{{cat.cat_name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-5">
+                <label for="inputPrice" class="form-label">Price</label>
+                <input type="number" step="any" min="1" name="prod_price" class="form-control" id="inputPrice" required>
+              </div>
+              <div class="col-12">
+                <label for="inputDesc" class="form-label">Description</label>
+                <textarea class="form-control" id="inputDesc" name="prod_desc" placeholder="Write a description..." style="resize: none;" rows="5" required></textarea>
+              </div>
+              <div class="col-12">
+                {% if messages %}
+                  {% for message in messages %}
+                      {% if message.tags == 'error' %}
+                          <p class="text-center">{{ message }}</p>
+                      {% endif %}
+                  {% endfor %}
+              {% endif %}
+                <button type="submit" class="btn btn-primary">Add Product</button>
+              </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

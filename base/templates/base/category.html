@@ -1,0 +1,167 @@
+{% extends "base/base.html" %}    
+{% load static %} 
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <div class="alert p-0 mt-1 mx-4 alert-success text-center" id="msg" role="alert">
+                {{ message }}
+            </div>
+        {% elif message.tags == 'warning' %}
+            <div class="alert p-0 mt-1 mx-4 alert-warning text-center" id="msg" role="alert">
+                {{ message }}
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+<link rel="stylesheet" href="{% static 'css/catss.css' %}">
+<div class="container-fluid">
+    <div class="row">
+        <div class='col-md-4'>
+            <div>
+                <div class="bg-white mx-2 my-2 py-4 rounded">
+                    <div class="navbar navbar-expand ml-5 pb-4 px-5 border-bottom">
+                        <i class="fa-solid fa-circle-plus fa-2xl"></i>
+                        <b><span class="h5 row-sm px-3">Add Category</span></b>
+                    </div>
+                    <form class="row g-3 pt-3 mx-4" method="post" action="{% url 'category_add' %}">
+                        {% csrf_token %}
+                        <div class="col-md-12">
+                            <label for="inputCatName" class="form-label">Category Name</label>
+                            <input type="text" class="form-control" id="inputCatName" name="cat_name" placeholder="Enter Category Name" required>
+                            {% if messages %}
+                                {% for message in messages %}
+                                    {% if message.tags == 'error' %}
+                                        <p class="text-center">{{ message }}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" name="save" class="btn btn-primary mx-0 my-2">Add Category</button>
+                        </div>
+                </div>
+            </div>
+            <div>
+                <div class="col bg-white mx-2 py-2 rounded">
+                    <div class="navbar navbar-expand pb-2 mx-3">
+                        <i class="fa-solid fa-list fa-lg"></i>
+                        <b><span class="row-sm px-3">Category List</span></b>
+                        <hr><hr>
+                    </div>
+                    <div class="col mx-3">
+                        <table id="cat_list" class="table table-sm table-bordered" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Category Name</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cat in cat_list %}
+                                <tr class="categories">
+                                    <th scope="row" class="cat_id">{{cat.cat_id}}</th>
+                                    <td class="cat_name">{{cat.cat_name}}</td>
+                                    <td><button formnovalidate type="button" id="edit" value="{{ cat.cat_id }}" class="btn btn-sm btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-regular fa-pen-to-square"></i></button>
+                                        <a href="{% url 'delete_category' cat.cat_id %}" name="delete" value="{{ cat.cat_id }}" class="delete btn btn-sm btn-danger"><i class="fa-regular fa-trash-can"></i></a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </form>
+                    </div>
+                </div>
+            </div> 
+        </div>
+        <div class='col-md-8'>
+            <div>
+            <div class="col bg-white rounded mx-2 my-2 px-3 py-1">
+                <div class="d-flex justify-content-center mx-0">
+                    <div class="row w-50">
+                        <div>
+                            <div class="input-group input-group-sm my-3 p-0 border border-dark" style="border-radius: 20px; height: 45px;">
+                                <select id="category_list" name="category_list" class="form-select border border-0" style="border-radius: 20px; margin-left: 0px;" aria-label="Default select example">
+                                    <option value="all" selected>---All---</option>
+                                    {% for cat in cat_list %}
+                                    <option value="{{ cat.cat_name }}">{{cat.cat_name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex mt-1 px-3 justify-content-between">
+                <div class="row mt-2">
+                    <p class="h4">Product List <span class="h5 font-weight-bold text-primary">{{ cat_prod|length }}</span></p>
+                </div>
+            </div>
+            <div class="col px-2 pt-1">
+                <table id="prod_table_list" class="table table-sm table-bordered" width="100%">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Product Brand</th>
+                            <th scope="col">Product Name</th>
+                            <th scope="col">Product Pack Size</th>
+                            <th scope="col">Product Category</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pcat in cat_prod %}
+                        <tr>
+                            <th scope="row">{{pcat.prod_id}}</th>
+                            <td>{{pcat.prod_brand}}</td>
+                            <td>{{pcat.prod_name}}</td>
+                            <td>{{pcat.prod_pack_size}}</td>
+                            <td>{{pcat.cat_id.cat_name}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form class="row g-3" id="edit_cat" method="post" action="{% url 'category_add' %}">
+                    {% csrf_token %}
+                    <div class="col-3">
+                        <label for="catid" class="form-label">Category ID</label>
+                        <input type="text" class="form-control" name="passed_id" id="catid" placeholder="Category ID" value="{{ cat_deets.cat_id }}" readonly>
+                    </div>
+                    <div class="col-8">
+                        <label for="editCatName" class="form-label">Category Name</label>
+                        <input type="text" name="edited_cname" class="form-control" id="editCatName" placeholder="Enter Category Name" value="{{ cat_deets.cat_name }}" required>
+                    </div>
+            </div>
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="close_modal" data-bs-dismiss="modal">Close</button>
+                <button type="submit" name="edit" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+                </form>
+    </div>
+</div>
+    <!-- jQuery -->
+    <script src='https://code.jquery.com/jquery-3.7.0.js'></script>
+    <!-- Data Table JS -->
+    <script src='https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js'></script>
+    <script src='https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js'></script>
+    <script src='https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js'></script>
+<script src="{% static 'scripts/cateee.js' %}"></script>
+{% endblock content %}

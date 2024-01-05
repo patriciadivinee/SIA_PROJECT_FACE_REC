@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'jquery/jquery-3.6.4.min.js' %}"></script>
+    <script src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script defer src="{% static 'fontawesome/all.min.js' %}" crossorigin="anonymous"></script>
+    <script src="{% static 'jquery/jspdf.umd.min.js' %}"></script>
+    <script src="{% static 'jquery/html2pdf.bundle.js' %}"></script>
+    <script src="{% static 'jquery/htmlcanvas.js' %}"></script>
+    <script src="{% static 'jquery/validation.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'fontawesome/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/templatesss.css' %}">
+    <link rel="stylesheet" href="{% static 'css/notiff.css' %}">
+    <title>Inventory Management</title>
+</head>
+<body>
+    {% block error %}
+    <div style="margin-top: 0px;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="h-100">
+                <div class="sidebar-logo">
+                    <a href="{% url 'home' %}">ICC-Crishna</a>
+                </div>
+                <!-- Sidebar Navigation -->
+                {% if request.user.is_authenticated %}
+                    <div class="profile">
+                        {% if not user.is_superuser %}
+                        {% if user.emp.emp_image %}
+                        <img src="{{ user.emp.emp_image.url }}" alt="Avatar" class="avatar">
+                        <h5>{{user.first_name}} {{user.last_name}}</h5>
+                        {% else %}
+                            <img src="/static/images/user (1).png" alt="Avatar" class="avatar">
+                        {% endif %}
+                        <p>Staff</p>
+                        {% else %}
+                            <img src="/static_files/images/icons8-admin-100.png" alt="Avatar" class="avatar">
+                            <p>Administrator</p>
+                        {% endif %}
+                        <a href="{% url 'edit_profile' %}" class="btn btn-outline-light btn-sm">Edit Profile</a>
+                    </div>
+                    <li class="sidebar-item">
+                        <a href="{% url 'home' %}" class="sidebar-link {% if nav == 'home' %}active{% endif %}">
+                            <i class="fa-solid fa-house fa-sm pe-2"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{% url 'inventory' inv_status='in stock' %}" class="sidebar-link {% if nav == 'inventory' %}active{% endif %}">
+                            <i class="fa-solid fa-warehouse fa-sm pe-2"></i>
+                            Inventory
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        {% if not user.is_superuser %}
+                        <a href="{% url 'emp_requisition' req_status='approved' %}" class="sidebar-link {% if nav == 'requisition' %}active{% endif %}">
+                            <i class="fa-solid fa-file-invoice pe-2"></i>
+                            Requisition
+                        </a>
+                        {% else %}
+                        <a href="{% url 'admin_requisition' req_status='pending' %}" class="sidebar-link {% if nav == 'requisition' %}active{% endif %}">
+                            <i class="fa-solid fa-file-invoice pe-2"></i>
+                            Requisition
+                        </a>
+                        {% endif %}
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{% url 'purchase_order' po_status='pending' %}" class="sidebar-link {% if nav == 'po' %}active{% endif %}">
+                            <i class="fa-solid fa-file-invoice-dollar pe-2"></i>
+                            Purchase Order
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="/supplier/list" class="sidebar-link {% if nav == 'supplier' %}active{% endif %}">
+                            <i class="fa-solid fa-truck-fast pe-2"></i>
+                            Suppliers
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="/products/list" class="sidebar-link {% if nav == 'product' %}active{% endif %}">
+                            <i class="fa-solid fa-basket-shopping pe-2"></i>
+                            Products
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="/products/category" class="sidebar-link {% if nav == 'category' %}active{% endif %}">
+                            <i class="fa-solid fa-tag pe-2"></i>
+                            Category
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="/employee/list" class="sidebar-link {% if nav == 'employee' %}active{% endif %}">
+                            <i class="fa-solid fa-users pe-2"></i>
+                            Staffs
+                        </a>
+                    </li>
+                    <li class="sidebar-item pt-4">
+                        <a href="{% url 'logout_emp' %}" class="sidebar-link">
+                            <i class="fa-solid fa-arrow-right-from-bracket pe-2"></i>
+                            Log Out
+                        </a>
+                    </li>
+                </ul>
+                {% endif %}
+            </div>
+        </aside>    
+        <!-- Main Component -->
+        <div class="main">
+            <nav id="header" class="navbar navbar-expand p-3 border-bottom ">
+                <!-- Button for sidebar toggle -->
+                <div class="container-fluid d-flex justify-content-start">
+                    <i class="fa-regular pe-2 fa-clock"></i>
+                    <span style="margin-right: 6px;" id="formattedDateTime"></span>
+                </div>
+                <div class="col-sm mx-3">
+                    <!-- Notification Bell with Dropdown (moved to the left) -->
+                    <div class="dropdown">
+                        <a class="text-light" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Notifications">
+                            <i class="fas fa-bell" style="font-size: 20px; color: #4a8af0"></i>
+                            {% if total_count %}
+                                <span class="total">{{ total_count }}</span>
+                            {% endif %}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+                            <!-- Notification List Dropdown Content -->
+                            <div id="notification-list" class="notification-list">
+                                <h6 class="item-title">Notifications</h6>
+                                {% if low_stock_products %}
+                                    <ul class="list-group">
+                                        {% for product in low_stock_products %}
+                                            <li class="list-group-item item-info">Product ID: {{ product.prod_id.prod_id }} ({{ product.prod_id.prod_name }}) is low in stock ({{ product.inv_qoh }} items left)</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+            
+                                {% if pending_requisitions %}
+                                    <ul class="list-group">
+                                        {% for requisition in pending_requisitions %}
+                                            <li class="list-group-item item-info">Requisition by {{ requisition.emp_id.emp_fname }} {{ requisition.emp_id.emp_lname }}: {{ requisition.req_comments }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+            
+                                {% if pending_purchase_orders %}
+                                    <ul class="list-group">
+                                        {% for purchase_order in pending_purchase_orders %}
+                                            <li class="list-group-item item-info">Purchase Order for {{ purchase_order.req_id.emp_id.emp_fname }} {{ purchase_order.req_id.emp_id.emp_lname }} created on {{ purchase_order.po_created_at }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <main id="wrapper" class="content px-3 pt-2">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'success' %}
+                            <div class="alert p-0 mt-1 mx-4 alert-{{message.tags}} text-center" id="msg" role="alert">
+                                {{ message }}
+                            </div>
+                        {% elif message.tags == 'error' %}
+                            <div class="alert p-0 mt-1 mx-4 alert-danger text-center" id="msg" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {% block content %}
+                {% endblock content %}
+            </main>
+        </div>
+    </div>
+    {% endblock error %}
+</body>
+<script src="{% static 'scripts/temp.js' %}"></script>
+</html>

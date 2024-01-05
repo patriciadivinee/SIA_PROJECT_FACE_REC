@@ -1,0 +1,70 @@
+{% extends "base/base.html" %}
+{% load static %} 
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/req.css' %}">
+{% if access_denied %}
+    <div class="alert alert-danger" role="alert">
+        <strong>Access Denied!</strong> You don't have permission to access this page.
+    </div>
+{% endif %}
+<div class="container">
+    <div class="row">
+      <div class="cardsBox">
+      <div id="lowStock">
+      <div class="cards border {% if status == 'Pending' %}active{% endif %}">
+          <a href="{% url 'purchase_order' po_status='pending' %}" style="color: black;">
+              <div class="numbers">{{ pending }}</div>
+              <div class="cardnames">Pending</div>
+          </a>
+          <div class="iconbx">
+             <i class="fa-solid fa-hourglass-half"></i>
+          </div>
+          </div>
+      </div>
+    <div id="highStock">
+        <div class="cards border {% if status == 'Complete' %}active{% endif %}">
+            <a href="{% url 'purchase_order' po_status='complete' %}" style="color: black;">
+                <div class="numbers">{{ complete }}</div>
+                <div class="cardnames">Complete</div>
+            </a>
+            <div class="iconbx">
+                <i class="fa-regular fa-calendar-check"></i>
+            </div>
+        </div>
+    </div>
+    <div id="outStock">
+        <div class="cards border {% if status == 'Cancelled' %}active{% endif %}">
+            <a href="{% url 'purchase_order' po_status='cancelled' %}" style="color: black;">
+                <div class="numbers">{{ cancelled }}</div>
+                <div class="cardnames">Cancelled</div>
+            </a>
+            <div class="iconbx">
+                <i class="fa-solid fa-ban"></i>
+            </div>
+        </div>
+    </div>
+      <div id="outStock">
+        <div class="cards border {% if status == 'Urgent' %}active{% endif %}">
+            <a href="{% url 'urgent' %}" style="color: black;">
+                <div class="numbers">{{ urgent }}</div>
+                <div class="cardnames">Urgent</div>
+            </a>
+        <div class="iconbx">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        </div>
+      </div>
+  </div>
+  {% block table %}
+  {% endblock table %}
+  </div>
+  </div>
+<!-- jQuery -->
+<script src='https://code.jquery.com/jquery-3.7.0.js'></script>
+<!-- Data Table JS -->
+<script src='https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js'></script>
+<script src='https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js'></script>
+<script src='https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js'></script>
+<script src="{% static 'scripts/invv.js' %}"></script>
+{% endblock content %}

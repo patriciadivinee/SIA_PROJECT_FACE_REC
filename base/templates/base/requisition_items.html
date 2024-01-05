@@ -1,0 +1,126 @@
+{% extends "base/base.html" %}
+{% load static %} 
+
+{% block content %}
+<style>
+    #prod_list td, #prod_list th {
+        border: none;
+    }
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #content, #content * {
+            visibility: visible;
+        }
+
+        #prod_list {
+            width: 60%;
+            padding-top: 0%;
+            padding-right: 0%;
+            height: 2%;
+        }
+
+        #content {
+            width: 100%;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            font-size: 10px;
+        }
+
+        #content td {
+            height: 10px;
+            padding: 3px;
+        }
+
+        #com {
+            font-size: 10px;
+        }
+    }
+
+    #content td {
+        padding: 3px;
+    }
+</style>
+<div class="d-flex pt-4 justify-content-center">
+    <div class="mx-auto col-10 col-md-8 col-lg-7 bg-white rounded py-4">
+        <div id="content">
+            <div class="px-3">
+                {% if req_id %}
+                <label class="h3">Requisition No. {{req_id.req_id}}</label>
+                <table id="prod_list" class="table table-lg" width="100%" style="border: none;">
+                    <tbody>
+                        <tr>
+                            <td scope="col" class="col-md-3" style="text-align: left;">Requested By</td>
+                            <td scope="col" class="col-md-7" style="padding-left: 10%;">{{user.first_name}} {{user.last_name}}</td>
+                        </tr>
+                        <tr>
+                            <td scope="col" class="col-md-3" style="text-align: left;">Date</td>
+                            <td scope="col" class="col-md-7" style="padding-left: 10%;">{{req_id.req_created_at}}</td>
+                        </tr>
+                        <tr>
+                            <td scope="col" class="col-md-3" style="text-align: left;">Requisition EDD</td>
+                            <td scope="col" class="col-md-7" style="padding-left: 10%;">{{req_id.req_edd}}</td>
+                        </tr>
+                        <tr>
+                            <td scope="col" class="col-md-3" style="text-align: left;">Status</td>
+                            <td scope="col" class="col-md-7" style="padding-left: 10%;">{{req_id.req_status}}</td>
+                        </tr>
+                        <tr>
+                            <td scope="col" class="col-md-3" style="text-align: left;">Received Date</td>
+                            <td scope="col" class="col-md-7" style="padding-left: 10%;">{{req_id.req_received_date}}</td>
+                        </tr>
+    
+                        <tr>
+                            <td scope="col" class="col-md-3" style="text-align: left;">Approved Date</td>
+                            <td scope="col" class="col-md-7" style="padding-left: 10%;">{{req_id.req_approved_date}}</td>
+                        </tr>
+    
+                    </tbody>
+                    {% endif %}
+                </table>
+            </div>
+            <div class="px-3">
+                <label class="h3">Requested Items</label>
+                <table id="prod_list1" class="table table-lg" width="100%">
+                    <thead>
+                        <th>Product ID</th>
+                        <th>Product Description</th>
+                        <th>Quantity</th>
+                    </thead>
+                    <tbody>
+                        {% for preq in req_items %}
+                        <tr>
+                            <td>{{ preq.prod_id.prod_id }}</td>
+                            <td>{{ preq.prod_id.prod_brand}} {{ preq.prod_id.prod_name}} {{ preq.prod_id.prod_pack_size}}</td> <!-- Retrieve product name -->
+                            <td>{{ preq.req_qty }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if req_id.req_status == 'REJECTED' %}
+                <label for="comments" class="form-label">Comments:</label>
+                <p id="com" class="form-control">
+                    {{ req_id.req_comments }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="px-3 pt-2">
+            <a class="btn btn-primary" href="{% url 'admin_requisition' req_id.req_status %}">
+                Back
+            </a>
+            <button type="button" class="btn btn-danger" onclick="window.print()">
+                <i class="fa-solid fa-file-pdf"></i>
+                Print as PDF
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+</script>
+<script src="{% static 'scripts/req_itemss.js' %}"></script>
+{% endblock content %}

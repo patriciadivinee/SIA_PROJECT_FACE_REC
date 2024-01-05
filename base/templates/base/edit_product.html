@@ -1,0 +1,65 @@
+{% extends "base/base.html" %}    
+
+{% block content %}
+    <!-- Main Component -->
+    <div class="d-flex align-items-center pt-5">
+        <div class="mx-auto col-10 col-md-8 col-lg-6">
+            <form class="row g-3" method="post" action="{% url 'edit_product' prod_deets.prod_id %}">
+              {% csrf_token %}
+              <div class="col-8">
+                <label for="inputProdBrand" class="form-label">Product Brand</label>
+                <input type="text" class="form-control" id="inputProdBrand" name="prod_brand" value="{{ prod_deets.prod_brand }}" required>
+              </div>
+              <div class="col-md-4">
+                <label for="inputStatus" class="form-label">Product Status</label>
+                <select id="inputStatus" value="{{ prod_deets.prod_status }}" class="form-select" name="status">
+                  <option value="Upcoming" {% if prod_deets.prod_status == 'Upcoming' %} selected {% endif %}>Upcoming</option>
+                  <option value="Available" {% if prod_deets.prod_status == 'Available' %} selected {% endif %}>Available</option>
+                  <option value="Discontinued" {% if prod_deets.prod_status == 'Discontinued' %} selected {% endif %}>Discontinued</option>
+                </select>
+              </div>
+              <div class="col-md-7">
+                <label for="inputProdName" class="form-label">Product Name</label>
+                <input type="text" class="form-control" name="prod_name" id="inputProdName" value="{{ prod_deets.prod_name }}" required>
+              </div>
+              <div class="col-md-3">
+                <label for="inputPackSize" class="form-label">Pack Size</label>
+                <input type="number" class="form-control" name="prod_pack_size" value="{{ pack_size.size }}" id="inputPackSize" min="1" required>
+              </div>
+              <div class="col-md-2">
+                <select id="inputUnit" value="{{ prod_deets.unit_ }}" class="form-select" name="unit" style="margin-top: 32px;">
+                  <option value="ml" {% if pack_size.unit_ == 'ml' %} selected {% endif %}>ml</option>
+                  <option value="g" {% if pack_size.unit_ == 'g' %} selected {% endif %}>g</option>
+                </select>
+              </div>
+              <div class="col-md-7">
+                <label for="inputCat" class="form-label">Category</label>
+                <select class="form-select border border-0" name="cat_id" style="border-radius: 20px; margin-left: 2px;" aria-label="Default select example" required>
+                  <option selected disabled>---Select Category---</option>
+                  {% for cat in cat_list %}
+                  <option value="{{ cat.cat_id }}" {% if pack_size.cat == cat.cat_id %} selected {% endif %}>{{cat.cat_name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-5">
+                <label for="inputPrice" class="form-label">Price</label>
+                <input type="number" step="any" min="1" value="{{ prod_deets.prod_price }}" name="prod_price" class="form-control" id="inputPrice" required>
+              </div>
+              <div class="col-12">
+                <label for="inputDesc" class="form-label">Description</label>
+                <textarea class="form-control" id="inputDesc" name="prod_desc" placeholder="Write a description..." style="resize: none;" rows="5" required>{{ prod_deets.prod_desc }}</textarea>
+              </div>
+              <div class="col-12">
+                {% if messages %}
+                  {% for message in messages %}
+                      {% if message.tags == 'error' %}
+                          <p class="text-center">{{ message }}</p>
+                      {% endif %}
+                  {% endfor %}
+              {% endif %}
+                <button type="submit" class="btn btn-primary">Update Product</button>
+              </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

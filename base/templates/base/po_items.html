@@ -1,0 +1,194 @@
+{% extends "base/base.html" %}
+{% load static %}    
+
+{% block content %}
+<style>
+    #prod_list td, #prod_list th {
+        border: none;
+    }
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #content, #content * {
+            visibility: visible;
+        }
+
+        #prod_list {
+            width: 60%;
+            padding-top: 0%;
+            padding-right: 0%;
+            height: 2%;
+        }
+
+        #content {
+            width: 100%;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            font-size: 10px;
+        }
+
+        #content td {
+            height: 10px;
+            padding: 3px;
+        }
+    }
+
+    #content td {
+        padding: 3px;
+    }
+</style>
+<div class="d-flex pt-4 justify-content-center">
+    <div class="mx-auto col-10 col-md-8 col-lg-12 bg-white rounded py-4">
+        <div id="content">
+            <div class="px-3">
+                {% if po %}
+                <label class="h3">Purchase Order No. {{ po.po_id }}</label>
+                <table id="prod_list" class="table table-lg" width="50%" style="border: none;">
+                    <tbody>
+                        <tr>
+                            <td scope="col" class="col-md-3" style="text-align: left;">Date</td>
+                            <td scope="col" class="col-md-7" style="padding-left: 10%;">{{ po.po_created_at}}</td>
+                        </tr>
+                        <tr>
+                            <td scope="col" class="col-md-3" style="text-align: left;">Status</td>
+                            <td scope="col" class="col-md-7" style="padding-left: 10%;">{{ po.po_status }}</td>
+                        </tr>
+                        {% if stat == 'COMPLETE' %}
+                        <tr>
+                            <td scope="col" class="col-md-3" style="text-align: left;">Received Date</td>
+                            <td scope="col" class="col-md-7" style="padding-left: 10%;">{{ po.po_received_date }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td scope="col" class="col-md-3" style="text-align: left;">Vendor Company</td>
+                            <td scope="col" class="col-md-7" style="padding-left: 10%;">{{ sup.sup_company}}</td>
+                        </tr>
+                        <tr>
+                            <td scope="col" class="col-md-3" style="text-align: left;">Vendor Name</td>
+                            <td scope="col" class="col-md-7" style="padding-left: 10%;">{{ sup.sup_fname }} {{sup.sup_mname }} {{ sup.sup_lname }}</td>
+                        </tr>
+                        <tr>
+                            <td scope="col" class="col-md-3" style="text-align: left;">Location</td>
+                            <td scope="col" class="col-md-7" style="padding-left: 10%;">{{ sup.sup_loc }}</td>
+                        </tr>
+                        <tr>
+                            <td scope="col" class="col-md-3" style="text-align: left;">Mobile #</td>
+                            <td scope="col" class="col-md-7" style="padding-left: 10%;">{{ sup.sup_mobile }}</td>
+                        </tr>
+                        <tr>
+                            <td scope="col" class="col-md-3" style="text-align: left;">Email</td>
+                            <td scope="col" class="col-md-7" style="padding-left: 10%;">{{ sup.sup_email }}</td>
+                        </tr>
+                    </tbody>
+                    {% endif %}
+                </table>
+            </div>
+            <div class="px-3">
+                <form action="{% url 'confirm_po' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="supmen" value="{{ po.po_id }}" />
+                    <table id="prod_list1" class="table table-lg" width="100%">
+                        <thead>
+                            <th>Product ID</th>
+                            <th>Product Description</th>
+                            <th>Quantity</th>
+                            {% if stat == 'PENDING' %}
+                            <th class="receivedQty" style="display: none;">Received Qty</th>
+                            {% else %}
+                            <th>Received Qty</th>
+                            {% endif %}
+                            <th>Price</th>
+                            <th>Total</th>
+                            {% if stat == 'PENDING' %}
+                            <th class="itemStatus" style="display: none;">Status</th>
+                            {% else %}
+                            <th>Status</th>
+                            {% endif %}
+                        </thead>
+                        <tbody>
+                            {% if poitem %}
+                            {% for po in poitem %}
+                            <tr>
+                                <td>{{ po.prod_id.prod_id }}</td>
+                                <td>{{ po.prod_id.prod_brand}} {{ po.prod_id.prod_name}} {{ po.prod_id.prod_pack_size}}</td> <!-- Retrieve product name -->
+                                <td>{{ po.po_item_qty }}</td>
+                                {% if stat == 'PENDING' %}
+                                <td class="receivedQty" style="display: none;">
+                                    <input
+                                        type="number"
+                                        min=0
+                                        max = {{ po.po_item_qty }}
+                                        id="rqty"
+                                        name="rqty"
+                                        style="width: 50px"
+                                        value="{{ po.po_item_received_qty }}"
+                                        />
+                                        <input
+                                        type="hidden"
+                                        name="po_item_id_{{ forloop.counter0 }}"
+                                        value="{{ po.po_item_id }}"
+                                    />
+                                </td>
+                                {% else %}
+                                <td>{{ po.po_item_received_qty }}</td>
+                                {% endif %}
+                                <td>{{ po.po_item_price }}</td>
+                                <td id="total" colspan="1">{{ po.po_item_total }}</td>
+                                {% if stat == 'PENDING' %}
+                                <td class="itemStatus" style="display: none;">{{ po.po_item_status }}</td>
+                                {% else %}
+                                <td>{{ po.po_item_status }}</td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                            {% if stat == 'PENDING' %}
+                            <tr>
+                                <td id="billtxt" colspan="4" style="text-align: right; padding-right: 2%;">Total Payable Bill : </td>
+                                <td id="amnt" colspan="2">{{total_po_item_total}}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td id="billtxt" colspan="5" style="text-align: right; padding-right: 2%;">Total Payable Bill : </td>
+                                <td id="amnt" colspan="2">{{total_po_item_total}}</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="px-3 pt-2">
+
+                <a type="button" class="btn btn-primary" href="{% url 'purchase_order' po.po_status %}">
+                    Back
+                </a>
+                {% if po.po_status == 'PENDING' %}
+                <button type="button" class="btn btn-primary" id="toReceived">
+                    To Received
+                </button>
+                <button type="submit" class="btn btn-primary" id="completePO" style="display: none;">
+                    Save & Submit
+                </button>
+                <button type="button" class="btn btn-primary" id="CancelReceive" style="display: none;">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-danger" id="printBtn" onclick="window.print()">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    Print as PDF
+                </button>
+                {% else %}
+                <button type="button" class="btn btn-danger" id="printBtn" onclick="window.print()">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    Print as PDF
+                </button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+<script src="{% static 'scripts/po_items.js' %}"></script>
+{% endblock content %}

@@ -1,0 +1,102 @@
+{% extends "base/inventory.html" %} 
+
+{% block table %}
+<div class="col bg-white rounded mx-2 my-2 px-3 py-1">
+    <div class="d-flex justify-content-center mx-0">
+        <div class="row w-50">
+            <div class="input-group input-group-sm my-3 border border-dark" style="border-radius: 20px; height: 45px;">
+                <div class="input-group-prepend align-self-center">
+                    <span class="input-group-text bg-transparent border border-0"><i class="fa-solid fa-magnifying-glass"></i></span>
+                </div>
+                <input id="search_input" type="text" oninput="hasText()" class="form-control border-0 shadow-none" aria-label="Small" aria-describedby="inputGroup-sizing-sm" placeholder="Search">
+
+                <div class="input-group-prepend ml-3 align-self-center">
+                    <span class="input-group-text bg-transparent m-0 border border-0">
+                        <button id="clear_btn" onclick="clearText()" class="btn btn-sm m-0 border border-0 circle" style="display: none;">
+                            <i id="clear-mark" class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex bd-highlight mb-0">
+        <div class="me-auto p-2 bd-highlight">
+            <p class="h4">{{status}} Product <span class="h5 font-weight-bold text-primary">{{ inventory|length }}</span></p>
+        </div>
+        <div class="p-2 bd-highlight">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <i class="fa-solid fa-plus"></i>
+                <span>Stock</span>
+            </button>
+        </div>
+    </div>
+    <div class="col px-2 pt-1">
+        <table id="inv_item" class="table table-sm table-bordered" width="100%">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 5%;">#</th>
+                    <th scope="col" style="width: 20%;">Product Brand</th>
+                    <th scope="col" style="width: 30%;">Product Name</th>
+                    <th scope="col">Product Price</th>
+                    <th scope="col" style="width: 10%;">Stock</th>
+                    <th scope="col" style="width: 15%;">Status</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inv in inventory %}
+                  <tr>
+                      <th scope="row">{{inv.prod_id.prod_id}}</th>
+                          <td>{{inv.prod_id.prod_brand}}</td>
+                          <td>{{inv.prod_id.prod_name}} {{inv.prod_id.prod_pack_size}}</td>
+                          <td>{{inv.prod_id.prod_price}}</td>
+                          <td>{{inv.inv_qoh}}</td>
+                          <td>{{inv.inv_status}}</td>
+                          <td><a href="{% url 'product_details' inv.prod_id.prod_id %}" class="btn btn-sm btn-info"><i class="fa-regular fa-eye"></i></i></a>
+                  </tr>
+                {% endfor %}
+              </tbody>
+        </table>
+</div>
+</div>
+</div>
+<div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" role="dialog">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Stock</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form class="row g-3" id="stock_form" method="post" action="{% url 'add_stock' %}">
+              {% csrf_token %}
+              <div class="col-9">
+                  <label for="search_id" class="form-label">Enter Product ID</label>
+                  <input type="text" name="search_id" class="form-control" data-toggle="popover" data-placement="bottom" data-trigger="manual" data-content="Input cannot be empty." id="search_id" placeholder="Enter Product ID" required>
+              </div>
+              <div class="col-2">
+                  <button type="button" class="btn btn-primary" id="searchBtn" style="margin-top: 32px;">Search</button>
+              </div>
+              <div class="col-11">
+                  <label for="prod_deets" class="form-label">Product</label>
+                  <input type="text" class="form-control" id="prod_deets" placeholder="Product Details" readonly>
+              </div>
+              <div class="col-6">
+                  <label for="prod_price" class="form-label">Price</label>
+                  <input type="text" class="form-control" id="prod_price" placeholder="Product Price" readonly>
+              </div>
+              <div class="col-6">
+                  <label for="prod_stock" class="form-label">Stock</label>
+                  <input type="number" class="form-control" min="1" name="prod_stock" id="prod_stock" placeholder="Enter Stock" required>
+              </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add Stock</button>
+        </div>
+          </form>
+      </div>
+    </div>
+</div>
+{% endblock table %}

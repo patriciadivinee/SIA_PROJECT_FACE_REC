@@ -1,0 +1,112 @@
+{% extends "base/base.html" %}    
+{% load static %} 
+
+{% block content %}
+<style>
+    .dataTables_filter {
+    display: none;
+  }
+</style>
+<div class="container-fluid">
+    <div class="row">
+        <div class='col-md-12'>
+            <div>
+                <div class="px-3 my-2 pt-3 pb-1 rounded">
+                    <h1>Create Requisition</h1>
+                </div>
+            </div>
+        </div>
+        <div class='col-md-6'>
+            <div>
+                <div id="products" class="bg-white my-2 py-3 px-3 rounded">
+                    <div class="d-flex justify-content-center mx-0">
+                        <div class="row w-50">
+                            <div class="input-group input-group-sm my-3 border border-dark" style="border-radius: 20px; height: 45px;">
+                                <div class="input-group-prepend align-self-center">
+                                    <span class="input-group-text bg-transparent border border-0"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                </div>
+                                <input id="search_input" type="text" oninput="hasText()" class="form-control border-0 shadow-none" aria-label="Small" aria-describedby="inputGroup-sizing-sm" placeholder="Search">
+                
+                                <div class="input-group-prepend ml-3 align-self-center">
+                                    <span class="input-group-text bg-transparent m-0 border border-0">
+                                        <button id="clear_btn" onclick="clearText()" class="btn btn-sm m-0 border border-0 circle" style="display: none;">
+                                            <i id="clear-mark" class="fa-solid fa-circle-xmark"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-sm table-bordered" id="prod_list" width="100%">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Product Brand</th>
+                                <th scope="col">Product Name</th>
+                                <th scope="col">QOH</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        
+                            {% if prod %}
+                            {% for pcat in prod %}
+                            <tr>
+                                <td>{{ pcat.prod_id }}</td>
+                                <td>{{ pcat.prod_brand }}</td>
+                                <td>{{ pcat.prod_name }} {{ pcat.prod_pack_size }}</td>
+                                <td>{{ pcat.inv_qoh }}</td>
+                                <td><button class="btn btn-sm btn-success" data-id="{{ pcat.prod_id }}" onclick="transferData(this, '{{ pcat.prod_id }}')"><i class="fa-solid fa-plus"></i></button></td>
+                            </tr>
+                            {% endfor %}
+        
+                            {% endif %}
+                        </tbody>
+                    </table>
+                    <button class="btn btn-primary" onclick="window.history.back()">Back</button>
+                </div>
+            </div>
+        </div>
+        <div class='col-md-6'>
+            <div>
+                <div  id="to_purchase" class="bg-white my-2 py-4 px-3 rounded">
+                    <form class="form-inline" method="post" action="{% url 'add_req' %}">
+                        {% csrf_token %}
+                        <div class="form-group row">
+                            <label for="inputEDD" class="col-sm-2 col-form-label">EDD</label>
+                            <div class="col-sm-6">
+                                <input type="date" class="form-control" name="edd" id="edd" required>
+                            </div>
+                        </div>
+                        <div class=my-3>
+                        <table id="destinationTable" class="table table-sm table-bordered" border="1">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Product Brand</th>
+                                    <th>Product Name</th>
+                                    <th>QOH</th>
+                                    <th>Request Quantity</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                            <!-- The destination table will be empty initially -->
+                        </table>
+                    </div>
+                        <button class="btn btn-primary" type="submit" id="add_req" >CREATE REQUISITION</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- jQuery -->
+<script src='https://code.jquery.com/jquery-3.7.0.js'></script>
+<!-- Data Table JS -->
+<script src='https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js'></script>
+<script src='https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js'></script>
+<script src='https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js'></script>
+<script src="{% static 'scripts/add_requist.js' %}"></script>
+{% endblock content %}

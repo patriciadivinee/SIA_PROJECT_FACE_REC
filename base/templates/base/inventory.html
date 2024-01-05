@@ -1,0 +1,59 @@
+{% extends "base/base.html" %}   
+{% load static %} 
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/inveen.css' %}">
+{% if access_denied %}
+    <div class="alert alert-danger" role="alert">
+        <strong>Access Denied!</strong> You don't have permission to access this page.
+    </div>
+{% endif %}
+<div class="container">
+    <div class="row">
+      <div class="cardsBox">
+      <div id="highStock">
+      <div class="cards border {% if status == 'In Stock' %}active{% endif %}">
+          <a href="{% url 'inventory' inv_status='in stock' %}" style="color: black;">
+              <div class="numbers">{{ all }}</div>
+              <div class="cardnames">All Items</div>
+          </a>
+          <div class="iconbx">
+              <i class="fa-solid fa-boxes-stacked"></i>
+          </div>
+        </div>
+      </div>
+      <div id="lowStock">
+      <div class="cards border {% if status == 'Low Stock' %}active{% endif %}">
+          <a href="{% url 'inventory' inv_status='low stock' %}" style="color: black;">
+              <div class="numbers">{{ low }}</div>
+              <div class="cardnames">Low Stock</div>
+          </a>
+          <div class="iconbx">
+             <i class="fa-solid fa-box-open"></i>
+          </div>
+          </div>
+      </div>
+      <div id="outStock">
+      <div class="cards border {% if status == 'Out Of Stock' %}active{% endif %}">
+          <a href="{% url 'inventory' inv_status='out of stock' %}" style="color: black;">
+              <div class="numbers">{{ out }}</div>
+              <div class="cardnames">Out of Stock</div>
+          </a>
+          <div class="iconbx">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          </div>
+      </div>
+  </div>
+  {% block table %}
+  {% endblock table %}
+  </div>
+  </div>
+<!-- jQuery -->
+<script src='https://code.jquery.com/jquery-3.7.0.js'></script>
+<!-- Data Table JS -->
+<script src='https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js'></script>
+<script src='https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js'></script>
+<script src='https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js'></script>
+<script src="{% static 'scripts/invv.js' %}"></script>
+{% endblock content %}

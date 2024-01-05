@@ -1,0 +1,108 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/teb.css' %}">
+<div class="container">
+    <div class="row">
+      <div class="col bg-white rounded mx-2 my-2 px-3 py-1">
+          <div class="d-flex justify-content-center mx-0">
+              <div class="row w-50">
+                  <div class="input-group input-group-sm my-3 border border-dark" style="border-radius: 20px; height: 45px;">
+                      <div class="input-group-prepend align-self-center">
+                          <span class="input-group-text bg-transparent border border-0"><i class="fa-solid fa-magnifying-glass"></i></span>
+                      </div>
+                      <input id="search_input" type="text" oninput="hasText()" class="form-control border-0 shadow-none" aria-label="Small" aria-describedby="inputGroup-sizing-sm" placeholder="Search">
+
+                      <div class="input-group-prepend ml-3 align-self-center">
+                          <span class="input-group-text bg-transparent m-0 border border-0">
+                              <button id="clear_btn" onclick="clearText()" class="btn btn-sm m-0 border border-0 circle" style="display: none;">
+                                  <i id="clear-mark" class="fa-solid fa-circle-xmark"></i>
+                              </button>
+                          </span>
+                      </div>
+                  </div>
+              </div>
+              <div class="row mx-3">
+                <div class="input-group input-group-sm my-3 p-0 border border-dark" style="border-radius: 20px;">
+                    <select id="category_list" class="form-select border border-0" style="border-radius: 20px;" aria-label="Default select example">
+                      <option selected value="all">---All---</option>
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+              </div>
+          </div>
+          <div class="d-flex mt-1 px-3 justify-content-between">
+              <div class="row mt-2">
+                  <p class="h4">Supplier List <span class="h5 font-weight-bold text-primary">{{ sup|length }}</span></p>
+              </div>
+              <div class="p-2">
+                  <a href="{% url 'add_supplier'%}" class="btn btn-sm btn-success">
+                      <i class="fa-solid fa-plus"></i>
+                      <span>Supplier</span>
+                  </a>
+              </div>
+          </div>
+        <div class="col px-2 pt-1">
+              <table id="sup_list" class="table table-sm table-bordered" width="100%">
+                  <thead>
+                    <tr>
+                        <th width="5%">#</th>
+                        <th>Company Name</th>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th width="10%">Mobile No.</th>
+                        <th>Email Address</th>
+                        <th>Facebook Link</th>
+                        <th width="8%">Status</th>
+                        <th width="10%">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% if sup %}
+                    {% for suppliers in sup %}
+                    <tr>
+                        <td class="marquee">{{ suppliers.sup_id }}</td>
+                        <td class="marquee">{{ suppliers.sup_company }}</td>
+                        <td class="marquee">{{ suppliers.sup_fname }} {{ suppliers.sup_mname }} {{ suppliers.sup_lname }}</td>
+                        <td class="marquee">{{ suppliers.sup_loc }}</td>
+                        <td class="marquee">{{ suppliers.sup_mobile }}</td>
+                        <td class="marquee">{{ suppliers.sup_email }}</td>
+                        <td class="marquee" type="url">{{ suppliers.sup_fb_acc }}</td>
+                        <td class="marquee" type="url">{% if suppliers.sup_status == 'Active' %}
+                            <i class="fa-solid fa-circle fa-2xs" style="color: #04ff00;"></i> Active
+                            {% else %}
+                            <i class="fa-solid fa-circle fa-2xs" style="color: #ff0000;"></i> Inactive
+                            {% endif %}</td>
+                        <td>
+                            {% if suppliers.sup_status == 'Active' %}
+                                <a href="{% url 'supplier_details' suppliers.sup_id %}" class="btn btn-sm btn-info">
+                                    <i class="fa-regular fa-eye"></i>
+                                </a>
+                                <a href="{% url 'edit_supplier' suppliers.sup_id %}" class="btn btn-sm btn-warning">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </a>
+                                <a href="{% url 'delete_supplier' suppliers.sup_id %}" class="btn btn-sm btn-danger">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'reactivate' suppliers.sup_id %}" class="btn btn-sm btn-success"><i class="fas fa-recycle"></i></a>
+                            {% endif %}
+                        </td>  
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                  </tbody>
+              </table>
+            </div>
+      </div>
+    </div>
+  </div>
+    <!-- jQuery -->
+    <script src='https://code.jquery.com/jquery-3.7.0.js'></script>
+    <!-- Data Table JS -->
+    <script src='https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js'></script>
+    <script src='https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js'></script>
+    <script src='https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js'></script>
+    <script src="{% static 'scripts/supply.js' %}"></script>
+  {% endblock content %}

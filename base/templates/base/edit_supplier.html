@@ -1,0 +1,134 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="d-flex align-items-center pt-2">
+    <div class="mx-auto col-10 col-md-8 col-lg-6 px-5 py-4 bg-white rounded">
+    <form class="row g-3" action="{% url 'update_supplier' sup.sup_id  %}" method="POST" enctype="multipart/form-data" id="my-form">
+        {% csrf_token %}
+        <h4>Edit Supplier</h4>
+        <div class="col-md-12">
+            <label for="inputProdBrand" class="form-label">Company Name</label>
+                <input type="text" class="form-control" id="inputProdBrand" placeholder="Enter Company Name" name="sup_company" value="{{sup.sup_company}}" required>
+                </div>
+                <!-- <div class="col-md-4">
+                    <label for="inputProdBrand" class="form-label">Status</label>
+                        <select id="inputStatus" value="{{ sup.sup_status }}" class="form-select" name="status">
+                            <option value="Active" {% if sup.sup_status == 'Active' %} selected {% endif %}>Active</option>
+                            <option value="Inactive" {% if sup.sup_status == 'Inactive' %} selected {% endif %}>Inactive</option>
+                        </select>
+                </div> -->
+            <div class="col-6">
+                <label for="inputProdName" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="inputProdName" placeholder="Enter First Name" name="sup_fname" value="{{sup.sup_fname}}" required>
+            </div>
+            <div class="col-6">
+                <label for="inputLastName" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="inputLastName" placeholder="Enter Last Name" name="sup_lname" value="{{sup.sup_lname}}" required>
+            </div>
+            <div class="col-12">
+                <label for="inputCat" class="form-label">Location</label>
+                <select id="inputUnit" class="form-select"  name="sup_loc" value="{{sup.sup_loc}}" required> 
+                    <option {% if sup.sup_loc == 'Abra' %} selected {% endif %}>Abra</option>
+                    <option {% if sup.sup_loc == 'Agusan del Norte' %} selected {% endif %}>Agusan del Norte</option>
+                    <option {% if sup.sup_loc == 'Agusan del Sur' %} selected {% endif %}>Agusan del Sur</option>
+                    <option {% if sup.sup_loc == 'Aklan' %} selected {% endif %}>Aklan</option>
+                    <option {% if sup.sup_loc == 'Albay' %} selected {% endif %}>Albay</option>
+                    <option {% if sup.sup_loc == 'Antique' %} selected {% endif %}>Antique</option>
+                    <option {% if sup.sup_loc == 'Apayao' %} selected {% endif %}>Apayao</option>
+                    <option {% if sup.sup_loc == 'Aurora' %} selected {% endif %}>Aurora</option>
+                    <option {% if sup.sup_loc == 'Basilan' %} selected {% endif %}>Basilan</option>
+                    <option {% if sup.sup_loc == 'Bataan' %} selected {% endif %}>Bataan</option>
+                    <option {% if sup.sup_loc == 'Batanes' %} selected {% endif %}>Batanes</option>
+                    <option {% if sup.sup_loc == 'Batangas' %} selected {% endif %}>Batangas</option>
+                    <option {% if sup.sup_loc == 'Benguet' %} selected {% endif %}>Benguet</option>
+                    <option {% if sup.sup_loc == 'Biliran' %} selected {% endif %}>Biliran</option>
+                    <option {% if sup.sup_loc == 'Bohol' %} selected {% endif %}>Bohol</option>
+                    <option {% if sup.sup_loc == 'Bukidnon' %} selected {% endif %}>Bukidnon</option>
+                    <option {% if sup.sup_loc == 'Bulacan' %} selected {% endif %}>Bulacan</option>
+                    <option {% if sup.sup_loc == 'Cagayan' %} selected {% endif %}>Cagayan</option>
+                    <option {% if sup.sup_loc == 'Camarines Norte' %} selected {% endif %}>Camarines Norte</option>
+                    <option {% if sup.sup_loc == 'Camarines Sur' %} selected {% endif %}>Camarines Sur</option>
+                    <option {% if sup.sup_loc == 'Camiguin' %} selected {% endif %}>Camiguin</option>
+                    <option {% if sup.sup_loc == 'Capiz' %} selected {% endif %}>Capiz</option>
+                    <option {% if sup.sup_loc == 'Catanduanes' %} selected {% endif %}>Catanduanes</option>
+                    <option {% if sup.sup_loc == 'Cavite' %} selected {% endif %}>Cavite</option>
+                    <option {% if sup.sup_loc == 'Cebu' %} selected {% endif %}>Cebu</option>
+                    <option {% if sup.sup_loc == 'Cotabato' %} selected {% endif %}>Cotabato</option>
+                    <option {% if sup.sup_loc == 'Davao de Oro (Compostela Valley)' %} selected {% endif %}>Davao de Oro (Compostela Valley)</option>
+                    <option {% if sup.sup_loc == 'Davao del Norte' %} selected {% endif %}>Davao del Norte</option>
+                    <option {% if sup.sup_loc == 'Davao del Sur' %} selected {% endif %}>Davao del Sur</option>
+                    <option {% if sup.sup_loc == 'Davao Occidental' %} selected {% endif %}>Davao Occidental</option>
+                    <option {% if sup.sup_loc == 'Davao Oriental' %} selected {% endif %}>Davao Oriental</option>
+                    <option {% if sup.sup_loc == 'Dinagat Islands' %} selected {% endif %}>Dinagat Islands</option>
+                    <option {% if sup.sup_loc == 'Eastern Samar' %} selected {% endif %}>Eastern Samar</option>
+                    <option {% if sup.sup_loc == 'Guimaras' %} selected {% endif %}>Guimaras</option>
+                    <option {% if sup.sup_loc == 'Ifugao' %} selected {% endif %}>Ifugao</option>
+                    <option {% if sup.sup_loc == 'Ilocos Norte' %} selected {% endif %}>Ilocos Norte</option>
+                    <option {% if sup.sup_loc == 'Ilocos Sur' %} selected {% endif %}>Ilocos Sur</option>
+                    <option {% if sup.sup_loc == 'Iloilo' %} selected {% endif %}>Iloilo</option>
+                    <option {% if sup.sup_loc == 'Isabela' %} selected {% endif %}>Isabela</option>
+                    <option {% if sup.sup_loc == 'Kalinga' %} selected {% endif %}>Kalinga</option>
+                    <option {% if sup.sup_loc == 'La Union' %} selected {% endif %}>La Union</option>
+                    <option {% if sup.sup_loc == 'Laguna' %} selected {% endif %}>Laguna</option>
+                    <option {% if sup.sup_loc == 'Lanao del Norte' %} selected {% endif %}>Lanao del Norte</option>
+                    <option {% if sup.sup_loc == 'Lanao del Sur' %} selected {% endif %}>Lanao del Sur</option>
+                    <option {% if sup.sup_loc == 'Leyte' %} selected {% endif %}>Leyte</option>
+                    <option {% if sup.sup_loc == 'Maguindanao' %} selected {% endif %}>Maguindanao</option>
+                    <option {% if sup.sup_loc == 'Marinduque' %} selected {% endif %}>Marinduque</option>
+                    <option {% if sup.sup_loc == 'Masbate' %} selected {% endif %}>Masbate</option>
+                    <option {% if sup.sup_loc == 'Misamis Occidental' %} selected {% endif %}>Misamis Occidental</option>
+                    <option {% if sup.sup_loc == 'Misamis Oriental' %} selected {% endif %}>Misamis Oriental</option>
+                    <option {% if sup.sup_loc == 'Mountain Province' %} selected {% endif %}>Mountain Province</option>
+                    <option {% if sup.sup_loc == 'Negros Occidental' %} selected {% endif %}>Negros Occidental</option>
+                    <option {% if sup.sup_loc == 'Negros Oriental' %} selected {% endif %}>Negros Oriental</option>
+                    <option {% if sup.sup_loc == 'Northern Samar' %} selected {% endif %}>Northern Samar</option>
+                    <option {% if sup.sup_loc == 'Nueva Ecija' %} selected {% endif %}>Nueva Ecija</option>
+                    <option {% if sup.sup_loc == 'Nueva Vizcaya' %} selected {% endif %}>Nueva Vizcaya</option>
+                    <option {% if sup.sup_loc == 'Occidental Mindoro' %} selected {% endif %}>Occidental Mindoro</option>
+                    <option {% if sup.sup_loc == 'Oriental Mindoro' %} selected {% endif %}>Oriental Mindoro</option>
+                    <option {% if sup.sup_loc == 'Palawan' %} selected {% endif %}>Palawan</option>
+                    <option {% if sup.sup_loc == 'Pampanga' %} selected {% endif %}>Pampanga</option>
+                    <option {% if sup.sup_loc == 'Pangasinan' %} selected {% endif %}>Pangasinan</option>
+                    <option {% if sup.sup_loc == 'Quezon' %} selected {% endif %}>Quezon</option>
+                    <option {% if sup.sup_loc == 'Quirino' %} selected {% endif %}>Quirino</option>
+                    <option {% if sup.sup_loc == 'Rizal' %} selected {% endif %}>Rizal</option>
+                    <option {% if sup.sup_loc == 'Romblon' %} selected {% endif %}>Romblon</option>
+                    <option {% if sup.sup_loc == 'Samar' %} selected {% endif %}>Samar</option>
+                    <option {% if sup.sup_loc == 'Sarangani' %} selected {% endif %}>Sarangani</option>
+                    <option {% if sup.sup_loc == 'Siquijor' %} selected {% endif %}>Siquijor</option>
+                    <option {% if sup.sup_loc == 'Sorsogon' %} selected {% endif %}>Sorsogon</option>
+                    <option {% if sup.sup_loc == 'South Cotabato' %} selected {% endif %}>South Cotabato</option>
+                    <option {% if sup.sup_loc == 'Southern Leyte' %} selected {% endif %}>Southern Leyte</option>
+                    <option {% if sup.sup_loc == 'Sultan Kudarat' %} selected {% endif %}>Sultan Kudarat</option>
+                    <option {% if sup.sup_loc == 'Sulu' %} selected {% endif %}>Sulu</option>
+                    <option {% if sup.sup_loc == 'Surigao del Norte' %} selected {% endif %}>Surigao del Norte</option>
+                    <option {% if sup.sup_loc == 'Surigao del Sur' %} selected {% endif %}>Surigao del Sur</option>
+                    <option {% if sup.sup_loc == 'Tarlac' %} selected {% endif %}>Tarlac</option>
+                    <option {% if sup.sup_loc == 'Tawi-Tawi' %} selected {% endif %}>Tawi-Tawi</option>
+                    <option {% if sup.sup_loc == 'Zambales' %} selected {% endif %}>Zambales</option>
+                    <option {% if sup.sup_loc == 'Zamboanga del Norte' %} selected {% endif %}>Zamboanga del Norte</option>
+                    <option {% if sup.sup_loc == 'Zamboanga del Sur' %} selected {% endif %}>Zamboanga del Sur</option>
+                    <option {% if sup.sup_loc == 'Zamboanga Sibugay' %} selected {% endif %}>Zamboanga Sibugay</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                <label for="inputMobileNumber" class="form-label">Mobile Number</label>
+                <input type="number" class="form-control" id="inputMobileNumber" placeholder="Enter Mobile Number" name="sup_mobile" value="{{sup.sup_mobile}}" required>
+            </div>
+            <div class="col-12">
+                <label for="inputEmail" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="inputEmail" placeholder="Enter Email Address" name="sup_email" value="{{sup.sup_email}}" required>
+            </div>
+            <div class="col-12">
+                <label for="inputFacebookLink" class="form-label">Facebook Link</label>
+                <input type="url" class="form-control" id="inputFacebookLink" placeholder="Enter Facebook Link" name="sup_fb_acc" value="{{sup.sup_fb_acc}}" required>
+            </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Update</button>
+    </div>
+</form>
+</div>
+</div>
+{% endblock content %}
