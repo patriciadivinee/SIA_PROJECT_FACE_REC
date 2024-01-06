@@ -397,7 +397,7 @@ def edit_product(request, prod_id):
 
                 if stat == 'Discontinued' and inv.inv_qoh != 0:
                     messages.error(request, 'Cannot discontinue product with more than 0 stock.')
-                else:
+            except Inventory.DoesNotExist:
                     unit = request.POST.get('unit')
                     prod_pack_size = request.POST.get('prod_pack_size')
                     prod.prod_brand = request.POST.get('prod_brand')
@@ -415,7 +415,7 @@ def edit_product(request, prod_id):
                     prod.save()
                     messages.success(request, 'Product is updated successfully!')
 
-                return redirect('products')
+                    return redirect('products')
             except IntegrityError:
                 messages.error(request, 'Product already exists.')
                 return redirect('edit_product')
@@ -428,13 +428,18 @@ def edit_product(request, prod_id):
 def delete_product(request, prod_id):
     try:
         prod = Product.objects.get(prod_id = prod_id)
-        inv = Inventory.objects.get(prod_id = prod)
-        if inv.inv_qoh != 0:
-            messages.error(request, 'Cannot discontinue product with more than 0 stock.')
-        else:
+        try:
+            inv = Inventory.objects.get(prod_id = prod)
+            if inv.inv_qoh != 0:
+                messages.error(request, 'Cannot discontinue product with more than 0 stock.')
+            else:
+                prod.prod_status = 'Discontinued'
+                prod.save()
+            return redirect('products')
+        except Inventory.DoesNotExist:
             prod.prod_status = 'Discontinued'
             prod.save()
-        return redirect('products')
+            return redirect('products')
     except Product.DoesNotExist:
         return render(request, 'base/error.html')
 
