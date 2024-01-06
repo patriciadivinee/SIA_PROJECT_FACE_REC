@@ -2,19 +2,6 @@
 {% load static %} 
 
 {% block content %}
-{% if messages %}
-    {% for message in messages %}
-        {% if message.tags == 'success' %}
-            <div class="alert p-0 mt-1 mx-4 alert-success text-center" id="msg" role="alert">
-                {{ message }}
-            </div>
-        {% elif message.tags == 'warning' %}
-            <div class="alert p-0 mt-1 mx-4 alert-warning text-center" id="msg" role="alert">
-                {{ message }}
-            </div>
-        {% endif %}
-    {% endfor %}
-{% endif %}
 <link rel="stylesheet" href="{% static 'css/catss.css' %}">
 <div class="container-fluid">
     <div class="row">

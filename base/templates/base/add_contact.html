@@ -37,5 +37,19 @@
 </form>
 </div>
 </div>
+<script>
+    document.getElementById('inputMobileNumber').addEventListener('input', function () {
+        var mobileNumber = this.value.replace(/\D/g, ''); // Remove non-numeric characters
 
+        if (mobileNumber.length === 11 && /^09\d{9}$/.test(mobileNumber)) {
+            // Valid Philippine mobile number
+            this.setCustomValidity('');
+            document.getElementById('mobileNumberHelp').textContent = 'Valid mobile number.';
+        } else {
+            // Invalid mobile number
+            this.setCustomValidity('Please enter a valid 11-digit Philippine mobile number.');
+            document.getElementById('mobileNumberHelp').textContent = 'Please enter a valid 11-digit Philippine mobile number.';
+        }
+    });
+</script>
 {% endblock content %}

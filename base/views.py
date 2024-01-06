@@ -200,7 +200,7 @@ def register(request):
             send_welcome_email(employee)
 
             messages.success(request, "Registration successful.")
-            return render(request, 'register.html')
+            return render(request, 'base/register.html')
     except IntegrityError:
         messages.error(request, 'Email already exists')
 
@@ -1109,7 +1109,7 @@ def update_supplier(request, sup_id):
             supplier = Supplier.objects.get(sup_id=sup_id)  # Retrieve the existing supplier
             supplier.sup_company = request.POST['sup_company']
             supplier.sup_fname = request.POST['sup_fname']
-            supplier.sup_status = request.POST['status']
+            # supplier.sup_status = request.POST['status']
             supplier.sup_lname = request.POST['sup_lname']
             supplier.sup_loc = request.POST['sup_loc']
             supplier.sup_mobile = request.POST['sup_mobile']
@@ -1120,6 +1120,17 @@ def update_supplier(request, sup_id):
             return redirect('/supplier/' + str(sup_id) + '/details')
     except IntegrityError:
         messages.error(request, 'Contact already exist.')
+
+def delete_supplier_item(request, sup_id, prod_id):
+    try:
+        # prod = Product.objects.get(pk=prod_id)
+        # sup = Supplier.()
+
+        item = Supplier_Item.objects.get(Q(sup_id = sup_id) & Q(prod_id = prod_id))
+        item.delete()
+        return redirect('/supplier/' + str(sup_id) + '/details')
+    except Supplier_Item.DoesNotExist:
+        return render(request, 'base/error.html')
 
 @login_required(login_url='user_login')
 @csrf_exempt

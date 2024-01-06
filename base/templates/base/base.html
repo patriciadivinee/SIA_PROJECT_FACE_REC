@@ -132,10 +132,18 @@
                             <!-- Notification List Dropdown Content -->
                             <div id="notification-list" class="notification-list">
                                 <h6 class="item-title">Notifications</h6>
+                                {% if out_stock_products %}
+                                    <ul class="list-group">
+                                        {% for product in out_stock_products %}
+                                            <li class="list-group-item item-info"><a href="{% url 'inventory' inv_status='Out Of Stock' %}">Product ID: {{ product.prod_id.prod_id }} ({{ product.prod_id.prod_name }}) is out of stock.</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+
                                 {% if low_stock_products %}
                                     <ul class="list-group">
                                         {% for product in low_stock_products %}
-                                            <li class="list-group-item item-info">Product ID: {{ product.prod_id.prod_id }} ({{ product.prod_id.prod_name }}) is low in stock ({{ product.inv_qoh }} items left)</li>
+                                            <li class="list-group-item item-info"><a href="{% url 'inventory' inv_status='Low Stock' %}">Product ID: {{ product.prod_id.prod_id }} ({{ product.prod_id.prod_name }}) is low in stock ({{ product.inv_qoh }} items left)</a></li>
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
@@ -143,7 +151,7 @@
                                 {% if pending_requisitions %}
                                     <ul class="list-group">
                                         {% for requisition in pending_requisitions %}
-                                            <li class="list-group-item item-info">Requisition by {{ requisition.emp_id.emp_fname }} {{ requisition.emp_id.emp_lname }}: {{ requisition.req_comments }}</li>
+                                            <li class="list-group-item item-info"><a href="{% url 'pending_request_items' requisition.req_id  %}" >Requisition by {{ requisition.emp_id.emp_fname }} {{ requisition.emp_id.emp_lname }}: {{ requisition.req_comments }}</a></li>
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
@@ -151,7 +159,7 @@
                                 {% if pending_purchase_orders %}
                                     <ul class="list-group">
                                         {% for purchase_order in pending_purchase_orders %}
-                                            <li class="list-group-item item-info">Purchase Order for {{ purchase_order.req_id.emp_id.emp_fname }} {{ purchase_order.req_id.emp_id.emp_lname }} created on {{ purchase_order.po_created_at }}</li>
+                                            <li class="list-group-item item-info"><a href="{% url 'view_po_items' purchase_order.po_id  %}">Purchase Order for {{ purchase_order.req_id.emp_id.emp_fname }} {{ purchase_order.req_id.emp_id.emp_lname }} created on {{ purchase_order.po_created_at }}</a></li>
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
