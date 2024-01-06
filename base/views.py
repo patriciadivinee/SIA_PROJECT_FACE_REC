@@ -1,4 +1,5 @@
 from datetime import timedelta
+import datetime
 import re
 import json
 from django.db.models import Sum, F, Count
@@ -11,6 +12,7 @@ from django.db import IntegrityError, transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from .forms import CategoryForm
 from .models import *
+from django.core.files.storage import default_storage
 # from .models import Product, Category, Inventory, Employee, CustomUser, Requisition, RequisitionItem, Contact, Supplier, Supplier_Item
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -276,8 +278,9 @@ def update(request, emp_id):
             new_image = request.FILES['imagefile']
 
             if employee.emp_image:
-                os.remove(employee.emp_image)
-            employee.emp_image = new_image
+                default_storage.delete(employee.emp_image.name)
+            employee.emp_image.save(new_image.name, new_image)
+
 
         user.email = employee.emp_email
         user.first_name = employee.emp_fname
@@ -339,6 +342,31 @@ def product_list(request):
     nav = 'product'
 
     return render(request, 'base/product_list.html', {'prods': prod_list, 'nav': nav})
+
+def purchase_history(request):
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    supplier_company = request.GET.get('supplier_company')
+
+    purchase_history = Purchase_Order.objects.all()
+    suppliers = Supplier.objects.all()
+
+    if supplier_company:
+        purchase_history = purchase_history.filter(sup_id__sup_company=supplier_company)
+
+        if not start_date and not end_date:
+            # If no date range specified, show all requisitions for the selected supplier
+            return render(request, 'base/purchase_history.html', {'purchase_history': purchase_history, 'suppliers': suppliers})
+
+    if start_date and end_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        purchase_history = purchase_history.filter(po_created_at__date__range=(start_date, end_date))
+
+    if not suppliers:
+        suppliers = []
+
+    return render(request, 'base/purchase_history.html', {'purchase_history': purchase_history, 'suppliers': suppliers})
 
 @login_required(login_url='user_login')
 def add_product(request):
@@ -874,6 +902,31 @@ def add_contact(request, sup_id):
         messages.error(request, 'Contact already exist.')
 
     return render(request, "base/add_contact.html", {'sup_id': sup_id, 'nav': 'supplier'})
+
+@login_required(login_url='user_login') 
+def edit_contact(request, sup_id, cont_id):
+    sup = Contact.objects.get(cont_per_id = cont_id)
+
+    context={"con": sup, 'nav': 'supplier', 'sup_id': sup_id}
+    return render(request, 'base/update_contact.html', context)
+
+@login_required(login_url='user_login') 
+def update_contact(request, cont_id):
+    try:
+        sup_id = request.POST['supmen']
+        contact = Contact.objects.get(cont_per_id=cont_id)
+        contact.cont_per_fname = request.POST['cont_per_fname']
+        contact.cont_per_lname = request.POST['cont_per_lname']
+        contact.cont_per_mobile = request.POST['cont_per_mobile']
+        contact.cont_per_email = request.POST['cont_per_email']
+        contact.cont_per_fb_acc = request.POST['cont_per_fb_acc']
+        contact.save()
+        id = contact.sup_id.sup_id
+        context = {'emp_id': cont_id}
+        return redirect('/supplier/' + str(id) + '/details')
+    except IntegrityError:
+        messages.error(request, 'Contact already exist.')
+
 
 @login_required(login_url='user_login')
 def sup_details(request, sup_id):

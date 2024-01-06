@@ -32,6 +32,9 @@
                         <a href="{% url 'delete_contact' con.cont_per_id %}" class="btn btn-danger">
                             <i class="fa-regular fa-trash-can"></i>
                         </a>
+                        <a href="{% url 'edit_contact' sup.sup_id con.cont_per_id %}" class="btn btn-warning">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                        </a>
                         <a href="{% url 'change_contact' sup.sup_id %}" class="btn btn-secondary">Change Contact Person</a>
                         </center>
                     {% else %}
