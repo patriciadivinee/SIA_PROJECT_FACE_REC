@@ -66,11 +66,6 @@
                         <input type="checkbox" id="staff_admin" name="staff_admin_access" {% if this_user.is_staff %} checked {% endif %} value="true">
                     </div>
                     <div class="col-md-3">
-                        <label for="superadmin" class="form-label">Superadmin</label><br>
-                        <input type="hidden" name="superadmin_access" value="false">
-                        <input type="checkbox" id="superadmin" name="superadmin_access" {% if this_user.is_superuser %} checked {% endif %} value="true">
-                    </div>
-                    <div class="col-md-3">
                         <label for="emp_access" class="form-label">Emp Access</label><br>
                         <input type="hidden" name="emp_access" value="false">
                         <input type="checkbox" id="emp_access" name="emp_access" {% if this_user.emp_access %} checked {% endif %} value="true">

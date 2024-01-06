@@ -64,6 +64,9 @@ urlpatterns = [
     path('supplier/id=<int:sup_id>/activate', views.activate_supplier, name='reactivate'),
     path('supplier/contact/<int:cont_id>/activate', views.activate_contact, name='activate_contact'),
     path('purchase/order/urgent', views.urgent_req_view, name='urgent'),
+    path('contact/<int:cont_id>/update', views.update_contact, name='update_contact'),
+    path('contact/<int:sup_id>/<int:cont_id>/edit', views.edit_contact, name='edit_contact'),
+    path('purchase_history/', views.purchase_history, name='purchase_history'),
 ]
 
 if settings.DEBUG:

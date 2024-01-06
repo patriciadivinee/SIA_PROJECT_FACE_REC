@@ -24,8 +24,28 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('emp_access', True)
 
+        employee, created = Employee.objects.get_or_create(emp_email = email, defaults={
+            'emp_fname': 'Joselito12',
+            'emp_lname':'Gumban',
+            'emp_gender':'Male',
+            'emp_mobile':'09339978564',
+            'emp_dob': '1991-11-30',
+            'emp_address':'Lapu-Lapu City',
+            'emp_password': 'admin123',
+            'emp_image': 'uploads/user_1.png'
+        } )
 
-        return self.create_user(email, password, **extra_fields)
+        if not created:
+            employee.emp_fname = 'not created'
+            employee.emp_lname = 'Gumban'
+            employee.emp_gender = 'Male'
+            employee.emp_mobile = '09339978564'
+            employee.emp_dob = '29/11/1991'
+            employee.emp_password = 'admin123'
+            employee.emp_address = 'Lapu-Lapu City'
+            employee.save()
+
+        return self.create_user(email, password, emp=employee, **extra_fields)
 
 # Create your models here.
 class Employee(models.Model):

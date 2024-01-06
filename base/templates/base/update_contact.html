@@ -1,0 +1,64 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<form class="row g-3" action="{% url 'update_contact' con.cont_per_id  %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+<div class="d-flex align-items-center">
+    <div class="mx-auto col-12 col-md-10 col-lg-8">
+        <div class="row g-3">
+        <!-- Contact Person Form (Left Side) -->
+            <div class="col-md-12">
+                <h3>Contact Person</h3>
+            </div>
+            <div class="col-md-12">
+                <label for="inputCPFirstName" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="inputCPFirstName" placeholder="Enter First Name" name="cont_per_fname"  value="{{con.cont_per_fname}}" required>
+            </div>
+            <div class="col-md-12">
+                <input type="hidden" name="supmen" value="{{ con.sup_id }}" />
+                <label for="inputLastName" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="inputLastName" placeholder="Enter Last Name" name="cont_per_lname" value="{{con.cont_per_lname}}" required>
+            </div>
+            <div class="col-md-12">
+                <label for="inputMobileNumber" class="form-label">Mobile Number</label>
+                <input type="number" class="form-control" id="inputMobileNumber" placeholder="Enter Mobile Number" name="cont_per_mobile" value="{{con.cont_per_mobile}}" required>
+            </div>
+            <div class="col-md-12">
+                <label for="inputEmail" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="inputEmail" placeholder="Enter Email Address" name="cont_per_email" value="{{con.cont_per_email}}" required>
+            </div>
+            <div class="col-md-12">
+                <label for="inputFacebookLink" class="form-label">Facebook Link</label>
+                <input type="url" class="form-control" id="inputFacebookLink" placeholder="Enter Facebook Link" name="cont_per_fb_acc" value="{{con.cont_per_fb_acc}}" required>
+            </div>
+                <div class="col-6">
+                    <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+            <div class="col-6 d-flex justify-content-end">
+                <a href="{% url 'supplier_details' sup_id %}" class="btn btn-primary">Back</a>
+        </div>
+        </div>
+    </div>
+</div>
+</form>
+<script>
+    document.getElementById('inputMobileNumber').addEventListener('input', function () {
+        var mobileNumber = this.value.replace(/\D/g, ''); // Remove non-numeric characters
+    
+        if (mobileNumber.length === 11 && /^09\d{9}$/.test(mobileNumber)) {
+            // Valid Philippine mobile number
+            this.setCustomValidity('');
+        } else {
+            // Invalid mobile number
+            this.setCustomValidity('Please enter a valid 11-digit Philippine mobile number.');
+        }
+    });
+    
+    // If you want to display a custom message to the user
+    document.getElementById('inputMobileNumber').addEventListener('invalid', function () {
+        this.setCustomValidity('Please enter a valid 11-digit Philippine mobile number.');
+    });
+    </script>
+{% endblock content %}
