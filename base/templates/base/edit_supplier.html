@@ -131,4 +131,68 @@
 </form>
 </div>
 </div>
+<script>
+    function validateInput() {
+        let supFirstName = document.getElementById('inputProdName').value;
+        let supLastName = document.getElementById('inputLastName').value;
+
+        // Function to check for consecutive spaces and leading space
+        const hasConsecutiveSpaces = (value) => / {2,}/.test(value);
+        const startsWithSpace = (value) => value.charAt(0) === ' ';
+        const hasNumber = (value) => /\d/.test(value);
+
+        // Validate the input fields
+        if (
+            hasConsecutiveSpaces(supFirstName) || hasConsecutiveSpaces(supLastName)
+        ) {
+            alert('Consecutive spaces are not allowed.');
+            return false;
+        }
+
+        if (
+            startsWithSpace(supFirstName) || startsWithSpace(supLastName)
+        ) {
+            alert('Input should not start with a space.');
+            return false;
+        }
+
+        if (
+            hasNumber(supFirstName) || hasNumber(supLastName)
+        ) {
+            alert('Numbers are not allowed in the first or last name.');
+            return false;
+        }
+
+        return validateMobileNumber(); // Proceed to mobile number validation
+    }
+
+    function validateMobileNumber() {
+        var mobileNumber = document.getElementById('inputMobileNumber').value.replace(/\D/g, ''); // Remove non-numeric characters
+
+        if (mobileNumber.length === 11 && /^09\d{9}$/.test(mobileNumber)) {
+            // Valid Philippine mobile number
+            document.getElementById('inputMobileNumber').setCustomValidity('');
+            return true;
+        } else {
+            // Invalid mobile number
+            document.getElementById('inputMobileNumber').setCustomValidity('Please enter a valid 11-digit Philippine mobile number.');
+            return false;
+        }
+    }
+
+    // Attach the validation function to the form submission event
+    document.getElementById('my-form').addEventListener('submit', function (event) {
+        if (!validateInput()) {
+            event.preventDefault(); // Prevent form submission if validation fails
+        }
+    });
+
+    // Validate on input change
+    document.getElementById('inputMobileNumber').addEventListener('input', validateMobileNumber);
+
+    // Validate and display custom message on invalid input
+    document.getElementById('inputMobileNumber').addEventListener('invalid', function () {
+        this.setCustomValidity('Please enter a valid 11-digit Philippine mobile number.');
+    });
+</script>
 {% endblock content %}

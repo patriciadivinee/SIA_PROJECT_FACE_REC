@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<form class="row g-3" action="{% url 'update_contact' con.cont_per_id  %}" method="POST" enctype="multipart/form-data">
+<form class="row g-3" action="{% url 'update_contact' con.cont_per_id  %}" method="POST" enctype="multipart/form-data" id="my-form">
     {% csrf_token %}
 <div class="d-flex align-items-center">
     <div class="mx-auto col-12 col-md-10 col-lg-8">
@@ -43,6 +43,42 @@
     </div>
 </div>
 </form>
+<script>
+    function validateInput() {
+        let cpFirstName = document.getElementById('inputCPFirstName').value;
+        let cpLastName = document.getElementById('inputLastName').value;
+
+        // Function to check for consecutive spaces and leading space
+        const hasConsecutiveSpaces = (value) => / {2,}/.test(value);
+        const startsWithSpace = (value) => value.charAt(0) === ' ';
+        const hasNumber = (value) => /\d/.test(value);
+
+        // Validate the input fields
+        if (hasConsecutiveSpaces(cpFirstName) || startsWithSpace(cpFirstName)) {
+            alert('Consecutive spaces are not allowed in the first name, and the input should not start with a space.');
+            return false;
+        }
+
+        if (hasConsecutiveSpaces(cpLastName) || startsWithSpace(cpLastName)) {
+            alert('Consecutive spaces are not allowed in the last name, and the input should not start with a space.');
+            return false;
+        }
+
+        if (hasNumber(cpFirstName) || hasNumber(cpLastName)) {
+            alert('Numbers are not allowed in the first or last name.');
+            return false;
+        }
+
+        return true; // Validation successful
+    }
+
+    // Attach the validation function to the form submission event
+    document.getElementById('my-form').addEventListener('submit', function (event) {
+        if (!validateInput()) {
+            event.preventDefault(); // Prevent form submission if validation fails
+        }
+    });
+</script>
 <script>
     document.getElementById('inputMobileNumber').addEventListener('input', function () {
         var mobileNumber = this.value.replace(/\D/g, ''); // Remove non-numeric characters

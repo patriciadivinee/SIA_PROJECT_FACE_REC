@@ -38,6 +38,60 @@
 </div>
 </div>
 <script>
+    const spacesAlertMessage = 'Consecutive spaces are not allowed, and the input should not start with a space.';
+
+    // Alert message for numbers in the name fields
+    const numbersNotAllowedMessage = 'Numbers are not allowed in the name fields.';
+
+    function validateInput() {
+        let cpFirstName = document.getElementById('inputCPFirstName').value;
+        let cpLastName = document.getElementById('inputLastName').value;
+
+        // Function to check for consecutive spaces and leading space
+        const hasConsecutiveSpaces = (value) => / {2,}/.test(value);
+        const startsWithSpace = (value) => value.charAt(0) === ' ';
+        const containsNumber = (value) => /\d/.test(value); // Check for presence of numbers
+
+        // Validate the input fields
+        if (
+            hasConsecutiveSpaces(cpFirstName) ||
+            startsWithSpace(cpFirstName)
+        ) {
+            alert(spacesAlertMessage);
+            return false;
+        }
+
+        if (
+            containsNumber(cpFirstName)
+        ) {
+            alert(numbersNotAllowedMessage);
+            return false;
+        }
+
+        if (
+            hasConsecutiveSpaces(cpLastName) ||
+            startsWithSpace(cpLastName)
+        ) {
+            alert(spacesAlertMessage);
+            return false;
+        }
+
+        if (
+            containsNumber(cpLastName)
+        ) {
+            alert(numbersNotAllowedMessage);
+            return false;
+        }
+
+        return true; // Validation successful
+    }
+
+    // Attach the validation function to the form submission event
+    document.getElementById('my-form').addEventListener('submit', function (event) {
+        if (!validateInput()) {
+            event.preventDefault(); // Prevent form submission if validation fails
+        }
+    });
     document.getElementById('inputMobileNumber').addEventListener('input', function () {
         var mobileNumber = this.value.replace(/\D/g, ''); // Remove non-numeric characters
 
