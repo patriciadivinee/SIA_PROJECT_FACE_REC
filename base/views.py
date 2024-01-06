@@ -20,6 +20,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth import update_session_auth_hash
 from .decorators import emp_access
+from django.core.exceptions import ValidationError
 import random
 import string
 import os
@@ -170,38 +171,40 @@ def logout_emp(request):
 @login_required(login_url='user_login')
 @csrf_exempt
 def register(request):
-    if request.method == 'POST':
-        emp_fname = request.POST.get('firstname')
-        emp_lname = request.POST.get('lastname')
-        emp_gender = request.POST.get('gender')
-        emp_address = request.POST.get('address')
-        emp_dob = request.POST.get('dob')
-        emp_mobile = request.POST.get('mobile')
-        emp_email = request.POST.get('emailaddress')
-        emp_password = generate_random_password()
-        encrypted = emp_password
+    try:
+        if request.method == 'POST':
+            emp_fname = request.POST.get('firstname')
+            emp_lname = request.POST.get('lastname')
+            emp_gender = request.POST.get('gender')
+            emp_address = request.POST.get('address')
+            emp_dob = request.POST.get('dob')
+            emp_mobile = request.POST.get('mobile')
+            emp_email = request.POST.get('emailaddress')
+            emp_password = generate_random_password()
+            encrypted = emp_password
 
-        if 'imagefile' in request.FILES:
-            emp_image = request.FILES['imagefile']
+            if 'imagefile' in request.FILES:
+                emp_image = request.FILES['imagefile']
 
-        fullname = emp_fname + emp_lname
+            employee = Employee.objects.create(emp_fname = emp_fname, emp_lname = emp_lname,
+                                                emp_gender = emp_gender, emp_dob = emp_dob, emp_mobile = emp_mobile, 
+                                                emp_email = emp_email, emp_password = emp_password, emp_image = emp_image,
+                                                emp_address = emp_address)
+            employee.save()
 
-        employee = Employee.objects.create(emp_fname = emp_fname, emp_lname = emp_lname,
-                                            emp_gender = emp_gender, emp_dob = emp_dob, emp_mobile = emp_mobile, 
-                                            emp_email = emp_email, emp_password = emp_password, emp_image = emp_image,
-                                            emp_address = emp_address)
-        employee.save()
+            user = CustomUser.objects.create(email = emp_email, first_name = emp_fname,
+                                                last_name = emp_lname, emp_id = employee.emp_id)
 
-        user = CustomUser.objects.create(email = emp_email, first_name = emp_fname,
-                                            last_name = emp_lname, emp_id = employee.emp_id)
+            user.set_password(encrypted)
+            user.save()
+            send_welcome_email(employee)
 
-        user.set_password(encrypted)
-        user.save()
-        send_welcome_email(employee)
+            messages.success(request, "Registration successful.")
+            return render(request, 'register.html')
+    except IntegrityError:
+        messages.error(request, 'Email already exists')
 
-        messages.success(request, "Registration successful.")
-        return render(request, 'register.html')
-    return redirect('register')
+    return redirect('register_acc')
 
 def send_welcome_email(employee):
     message = (
@@ -788,7 +791,6 @@ def mark_received(request):
 
         return JsonResponse({'success': False})
 
-@login_required(login_url='user_login')
 def update_inventory(requisition_item):
     try:
         if requisition_item.req_for_purchase == False and requisition_item.req_item_received_qty is not None:
@@ -1170,8 +1172,12 @@ def view_po_items(request, po_id):
         sup_id = po.sup_id.sup_id
         sup = Supplier.objects.get(sup_id = sup_id)
         poitem = Purchase_Order_Item.objects.filter(po_id=po_id) 
-        total_po_item_total = poitem.aggregate(total=Sum('po_item_total'))['total'] or 0
-        context = {'poitem': poitem, 'po': po, 'sup': sup, 'total_po_item_total': total_po_item_total, 'stat': status, 'nav': 'po'}
+        calculated_values = poitem.annotate(calculated_value=F('po_item_received_qty') * F('po_item_price')).values_list('calculated_value', flat=True)
+
+    # Calculate the sum of (received_qty * price)
+        total_po_item_total_complete = sum(calculated_values)
+        total_po_item_total_pending = poitem.aggregate(total=Sum('po_item_total'))['total'] or 0
+        context = {'poitem': poitem, 'po': po, 'sup': sup, 'total_complete': total_po_item_total_complete, 'stat': status, 'nav': 'po','calculated_values': calculated_values, 'total_pending': total_po_item_total_pending}
     except Exception as e:
         pass
 
@@ -1196,8 +1202,8 @@ def urgent_req_view(request):
                }
     return render(request, "base/urgent_req.html", context)
 
-@login_required(login_url='user_login')
 def complete_po(po_id):
+    print(po_id)
     try:
         po = Purchase_Order.objects.get(po_id = po_id)
         po.po_status = 'COMPLETE'
@@ -1257,6 +1263,7 @@ def confirm_po(request):
             # Update the po_status based on po_item_status values
             po_statuses = set(po_item.po_item_status for po_item in Purchase_Order_Item.objects.filter(po_id=poid))
             po = Purchase_Order.objects.get(po_id=poid)
+            print(poid)
             complete_po(poid)
 
         # Redirect back to the page or wherever you want
