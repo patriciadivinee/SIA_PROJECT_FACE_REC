@@ -45,17 +45,10 @@
                 <textarea class="form-control" id="inputDesc" name="prod_desc" placeholder="Write a description..." style="resize: none;" rows="5" required></textarea>
               </div>
               <div class="col-6">
-                {% if messages %}
-                  {% for message in messages %}
-                      {% if message.tags == 'error' %}
-                          <p class="text-center">{{ message }}</p>
-                      {% endif %}
-                  {% endfor %}
-              {% endif %}
                 <button type="submit" class="btn btn-primary">Add Product</button>
               </div>
               <div class="col-6 d-flex justify-content-end">
-                <button type="submit" class="btn btn-outline-primary" onclick="window.history.back()">Back</button>
+                <a class="btn btn-outline-primary" href="{% url 'products' %}">Back</a>
               </div>
             </form>
         </div>

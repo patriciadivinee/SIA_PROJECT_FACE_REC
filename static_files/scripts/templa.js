@@ -22,3 +22,7 @@ $(document).ready(function() {
     // Display the formatted date and time
     $('#formattedDateTime').text(formattedDateTime);
 });
+
+setTimeout(function() {
+    bootstrap.Alert.getOrCreateInstance(document.querySelector(".alert")).close();
+  }, 3000)

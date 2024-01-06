@@ -125,9 +125,12 @@
                 <label for="inputFacebookLink" class="form-label">Facebook Link</label>
                 <input type="url" class="form-control" id="inputFacebookLink" placeholder="Enter Facebook Link" name="sup_fb_acc" value="{{sup.sup_fb_acc}}" required>
             </div>
-        <div class="col-12">
+        <div class="col-6">
             <button type="submit" class="btn btn-primary">Update</button>
     </div>
+    <div class="col-6 d-flex justify-content-end">
+        <a href="{% url 'supplier_list' %}" class="btn btn-outline-primary">Back</a>
+</div>
 </form>
 </div>
 </div>

@@ -58,9 +58,19 @@
     background: #f04a4a;
 }
 
+#complete .active{
+    background: #4af055;
+}
+
 #highStock .active .numbers,
 #highStock .active .cardnames,
 #highStock .active .iconbx {
+    color: #13223b;
+}
+
+#complete .active .numbers,
+#complete .active .cardnames,
+#complete .active .iconbx {
     color: #13223b;
 }
 
@@ -87,6 +97,10 @@
 
 #outStock .cards:hover{
     background: #f04a4a;
+}
+
+#complete .cards:hover{
+    background: #4af055;
 }
 
 .dataTables_filter {

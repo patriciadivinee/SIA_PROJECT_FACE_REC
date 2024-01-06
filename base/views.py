@@ -368,31 +368,56 @@ def purchase_history(request):
 
     return render(request, 'base/purchase_history.html', {'purchase_history': purchase_history, 'suppliers': suppliers})
 
+def custom_title_format(title):
+    words = title.split()
+    modified_words = []
+
+    for word in words:
+        if "'" in word:
+            parts = word.split("'")
+            modified_word = parts[0] + "'" + parts[1].lower()
+            modified_words.append(modified_word)
+        else:
+            modified_words.append(word)
+
+    return ' '.join(modified_words)
+
 @login_required(login_url='user_login')
 def add_product(request):
     if request.method == 'POST':
+        brand_ = request.POST.get('prod_brand').strip()
+        brand = custom_title_format(brand_)
+        name_ = request.POST.get('prod_name').strip()
+        name = custom_title_format(name_)
+        desc = request.POST.get('prod_desc').strip()
+        cat = request.POST.get('cat_id')
+
         try:
-            prod = Product()
-            unit = request.POST.get('unit')
-            prod_pack_size = request.POST.get('prod_pack_size')
-            prod.prod_brand = request.POST.get('prod_brand')
-            prod.prod_name = request.POST.get('prod_name')
-            prod.prod_price = request.POST.get('prod_price')
-            prod.prod_pack_size = f"{prod_pack_size}{unit}"
-            prod.prod_desc = request.POST.get('prod_desc')
-            cat_id = request.POST.get('cat_id')
+            if not brand.isspace() and not name.isspace() and not desc.isspace() and not brand.isdigit() and not name.isdigit() and not desc.isdigit() and cat != None and brand != '' and name != '' and desc != '':
+                prod = Product()
+                unit = request.POST.get('unit')
+                prod_pack_size = request.POST.get('prod_pack_size')
+                prod.prod_brand = brand.title()
+                prod.prod_name = name.title()
+                prod.prod_price = request.POST.get('prod_price')
+                prod.prod_pack_size = f"{prod_pack_size}{unit}"
+                prod.prod_desc = desc.lower()
+                cat_id = cat
 
-            category_instance = Category.objects.get(pk=cat_id)
+                category_instance = Category.objects.get(pk=cat_id)
 
-            prod.cat_id = category_instance
+                prod.cat_id = category_instance
 
-            prod.save()
-            messages.success(request, 'Product is added successfully!')
+                prod.save()
+                messages.success(request, 'Product is added successfully!')
 
-            return redirect('products')
+                return redirect('products')
+            else:
+                messages.error(request, 'Please enter valid data.')
+                return redirect('view_form_product')
         except IntegrityError:
-            messages.error(request, 'Product already exists.')
-            return redirect('view_form_product')
+                messages.error(request, 'Product already exists.')
+                return redirect('view_form_product')
     else:
         return render(request, 'base/add_product.html')
 
@@ -419,21 +444,50 @@ def edit_product(request, prod_id):
         }
 
         if request.method == 'POST':
+            brand_ = request.POST.get('prod_brand').strip()
+            brand = custom_title_format(brand_)
+            name_ = request.POST.get('prod_name').strip()
+            name = custom_title_format(name_)
+            desc = request.POST.get('prod_desc').strip()
+            cat = request.POST.get('cat_id')
+            unit = request.POST.get('unit')
+            stat = request.POST.get('status')
             try:
                 inv = Inventory.objects.get(prod_id = prod)
-                stat = request.POST.get('status')
 
                 if stat == 'Discontinued' and inv.inv_qoh != 0:
                     messages.error(request, 'Cannot discontinue product with more than 0 stock.')
+                else:
+                    if not brand.isspace() and not name.isspace() and not desc.isspace() and not brand.isdigit() and not name.isdigit() and not desc.isdigit() and cat != None and brand != '' and name != '' and desc != '':
+                        prod_pack_size = request.POST.get('prod_pack_size')
+                        prod.prod_brand = brand.title()
+                        prod.prod_name = name.title()
+                        prod.prod_price = request.POST.get('prod_price')
+                        prod.prod_pack_size = f"{prod_pack_size}{unit}"
+                        prod.prod_desc = desc.lower()
+                        prod.prod_status = stat
+                        cat_id = request.POST.get('cat_id')
+
+                        category_instance = Category.objects.get(pk=cat_id)
+
+                        prod.cat_id = category_instance
+
+                        prod.save()
+                        messages.success(request, 'Product is updated successfully!')
+
+                        return redirect('products')
+                    else:
+                        messages.error(request, 'Please enter valid data.')
+                        return redirect('edit_product', prod_id)
             except Inventory.DoesNotExist:
-                    unit = request.POST.get('unit')
+                if not brand.isspace() and not name.isspace() and not desc.isspace() and not brand.isdigit() and not name.isdigit() and not desc.isdigit() and cat != None and brand != '' and name != '' and desc != '':
                     prod_pack_size = request.POST.get('prod_pack_size')
-                    prod.prod_brand = request.POST.get('prod_brand')
-                    prod.prod_name = request.POST.get('prod_name')
+                    prod.prod_brand = brand.title()
+                    prod.prod_name = name.title()
                     prod.prod_price = request.POST.get('prod_price')
                     prod.prod_pack_size = f"{prod_pack_size}{unit}"
-                    prod.prod_desc = request.POST.get('prod_desc')
-                    prod.prod_status = request.POST.get('status')
+                    prod.prod_desc = desc.lower()
+                    prod.prod_status = stat
                     cat_id = request.POST.get('cat_id')
 
                     category_instance = Category.objects.get(pk=cat_id)
@@ -444,12 +498,15 @@ def edit_product(request, prod_id):
                     messages.success(request, 'Product is updated successfully!')
 
                     return redirect('products')
+                else:
+                    messages.error(request, 'Please enter valid data.')
+                    return redirect('edit_product', prod_id)
             except IntegrityError:
                 messages.error(request, 'Product already exists.')
-                return redirect('edit_product')
+                return redirect('edit_product', prod_id)
 
         return render(request, 'base/edit_product.html', {'cat_list': cat_list, 'prod_deets': prod, 'pack_size': pack_size, 'nav': 'product'})
-    except:
+    except Product.DoesNotExist:
         return render(request, 'base/error.html')
 
 @login_required(login_url='user_login')
@@ -494,22 +551,31 @@ def category_view(request):
 def category_add(request):
     if request.method == 'POST':
         if 'save' in request.POST:
-            forms = CategoryForm(request.POST)
-            if forms.is_valid():
-                forms.save()
-                messages.success(request, 'Category is added successfully!')
-            else:
+            try:
+                forms = CategoryForm(request.POST)
+                cate = request.POST.get('cat_name').strip()
+                if forms.is_valid() and not cate.isdigit():
+                    category = Category()
+                    category.cat_name = cate.title()
+                    category.save()
+                    messages.success(request, 'Category is added successfully!')
+                else:
+                    messages.error(request, 'Please enter valid data.')
+            except IntegrityError:
                 messages.error(request, 'Category already exists.')
         elif 'edit' in request.POST:
             try:
                 cat_id = int(request.POST.get('passed_id'))
-                cname = request.POST.get('edited_cname')
+                cname = request.POST.get('edited_cname').strip()
 
-                cat = Category.objects.get(pk=cat_id)
+                if not cname.isspace() and not cname.isdigit() and cname != '':
+                    cat = Category.objects.get(pk=cat_id)
 
-                cat.cat_name = cname
-                cat.save()
-                messages.success(request, 'Category is updated successfully!')
+                    cat.cat_name = cname.title()
+                    cat.save()
+                    messages.success(request, 'Category is updated successfully!')
+                else:
+                    messages.error(request, 'Please enter valid data.')
             except IntegrityError:
                 messages.success(request, 'Category already exists.')
         return redirect('/products/category')

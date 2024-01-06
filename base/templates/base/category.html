@@ -17,13 +17,6 @@
                         <div class="col-md-12">
                             <label for="inputCatName" class="form-label">Category Name</label>
                             <input type="text" class="form-control" id="inputCatName" name="cat_name" placeholder="Enter Category Name" required>
-                            {% if messages %}
-                                {% for message in messages %}
-                                    {% if message.tags == 'error' %}
-                                        <p class="text-center">{{ message }}</p>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
                         </div>
                         <div class="d-flex justify-content-end">
                             <button type="submit" name="save" class="btn btn-primary mx-0 my-2">Add Category</button>
@@ -52,7 +45,7 @@
                                     <th scope="row" class="cat_id">{{cat.cat_id}}</th>
                                     <td class="cat_name">{{cat.cat_name}}</td>
                                     <td><button formnovalidate type="button" id="edit" value="{{ cat.cat_id }}" class="btn btn-sm btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-regular fa-pen-to-square"></i></button>
-                                        <a href="{% url 'delete_category' cat.cat_id %}" name="delete" value="{{ cat.cat_id }}" class="delete btn btn-sm btn-danger"><i class="fa-regular fa-trash-can"></i></a></td>
+                                        <!-- <a href="{% url 'delete_category' cat.cat_id %}" name="delete" value="{{ cat.cat_id }}" class="delete btn btn-sm btn-danger"><i class="fa-regular fa-trash-can"></i></a></td> -->
                                 </tr>
                                 {% endfor %}
                             </tbody>

@@ -41,11 +41,10 @@
 <div>
     {% if user.is_superuser %}
     <center><h1>Welcome Administrator to BeautyKi</h1></center>
-    <div class="report-button-container" style="text-align: right; padding-right: 20px;">
-        <a href="{% url 'purchase_history' %}">
-        <button id="reportButton">
+    <div class="report-button-container pb-2" style="text-align: right; padding-right: 20px;">
+        <a href="{% url 'purchase_history' %}" class="btn btn-success">
             <i class="fa fa-file-text-o"></i> Purchased History
-        </button>
+        </a>
     </div>
     <div class="grid-container">
         <div class="chart-container">
