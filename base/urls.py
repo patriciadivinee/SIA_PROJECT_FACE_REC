@@ -45,6 +45,7 @@ urlpatterns = [
     path('supplier/list', views.supplier_list, name='supplier_list'),
     path('supplier/create', views.add_sup, name='add_supplier'),
     path('supplier/<int:sup_id>/delete', views.delete_sup, name='delete_supplier'),
+    path('supplier/<int:sup_id>/<int:prod_id>/delete', views.delete_supplier_item, name='delete_supplier_item'),
     path('supplier/<int:sup_id>/edit', views.edit_supplier, name='edit_supplier'),
     path('supplier/<int:sup_id>/update', views.update_supplier, name='update_supplier'),
     path('supplier/<int:sup_id>/contact/create', views.add_contact, name='add_contact'),

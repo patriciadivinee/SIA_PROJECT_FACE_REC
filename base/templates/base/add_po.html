@@ -132,4 +132,61 @@
 <script src='https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js'></script>
 <script src='https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js'></script>
 <script src="{% static 'scripts/po_add.js' %}"></script>
+<script>
+    // Function to check if destinationTable is empty
+    function isDestinationTableEmpty() {
+        return $('#destinationTable tbody tr').length === 0;
+    }
+
+    // Function to handle the activation and deactivation of the search button
+    function toggleSearchButton() {
+        const searchButton = $('#buttones');
+
+        if (isDestinationTableEmpty()) {
+            searchButton.prop('disabled', false);
+        } else {
+            searchButton.prop('disabled', true);
+        }
+    }
+
+    // Function to check if the selected EDD is greater than today's date
+    function isEDDGreaterThanToday() {
+        const selectedEDD = new Date($('#edd').val());
+        const today = new Date();
+
+        return selectedEDD > today;
+    }
+
+    // Function to handle the EDD validation
+    function validateEDD() {
+        const eddInput = $('#edd');
+        const createButton = $('#add_po');
+
+        if (isEDDGreaterThanToday()) {
+            eddInput.removeClass('is-invalid'); // Remove invalid class
+            createButton.prop('disabled', false); // Enable the create button
+        } else {
+            // Add invalid class to highlight the input
+            createButton.prop('disabled', true); // Disable the create button
+        }
+    }
+
+    // Call the toggleSearchButton function and add event listener for EDD validation on document ready
+    $(document).ready(function() {
+        toggleSearchButton();
+        validateEDD();
+
+        // Add event listener for changes in the EDD input
+        $('#edd').on('change', function() {
+            validateEDD();
+        });
+    });
+
+    // Add an event listener to the destinationTable for changes
+    $('#destinationTable').on('DOMSubtreeModified', function() {
+        toggleSearchButton();
+    });
+
+    // Your existing code...
+</script>
 {% endblock content %}

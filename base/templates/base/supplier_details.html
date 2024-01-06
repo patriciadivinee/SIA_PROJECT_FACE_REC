@@ -102,7 +102,7 @@
                                     <td class="marquee">{{ prod.prod_desc }}</td>
                                     <td class="marquee">{{ prod.prod_pack_size }}</td>
                                     <td>
-                                        <a href="#" name="product_id" value="{{ prod.prod_id }}" class="btn btn-sm btn-danger">
+                                        <a href="{% url 'delete_supplier_item' sup.sup_id prod.prod_id %}" name="product_id" value="{{ prod.prod_id }}" class="btn btn-sm btn-danger">
                                             <i class="fa-regular fa-trash-can"></i>
                                         </a>
                                     </td>
