@@ -199,4 +199,9 @@ class Purchase_Order_Item(models.Model):
     def save(self, *args, **kwargs):
         # Calculate po_item_total before saving
         self.po_item_total = self.po_item_qty * self.po_item_price
+
+        # Check if po_item_status is changed to 'PARTIAL'
+        if self.po_item_status == 'PARTIAL':
+            self.po_item_total = self.po_item_received_qty * self.po_item_price
+
         super().save(*args, **kwargs)

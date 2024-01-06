@@ -1,6 +1,5 @@
 {% extends "base/base.html" %}
 {% load static %}    
-
 {% block content %}
 <style>
     #prod_list td, #prod_list th {
@@ -137,7 +136,7 @@
                                 <td>{{ po.po_item_received_qty }}</td>
                                 {% endif %}
                                 <td>{{ po.po_item_price }}</td>
-                                <td id="total" colspan="1">{{ po.po_item_total }}</td>
+                                <td id="total" colspan="1">{{po.po_item_total}}</td>
                                 {% if stat == 'PENDING' %}
                                 <td class="itemStatus" style="display: none;">{{ po.po_item_status }}</td>
                                 {% else %}
@@ -149,14 +148,15 @@
                             {% if stat == 'PENDING' %}
                             <tr>
                                 <td id="billtxt" colspan="4" style="text-align: right; padding-right: 2%;">Total Payable Bill : </td>
-                                <td id="amnt" colspan="2">{{total_po_item_total}}</td>
+                                <td id="amnt" colspan="2">₱{{total_pending}}</td>
                             </tr>
                             {% else %}
                             <tr>
                                 <td id="billtxt" colspan="5" style="text-align: right; padding-right: 2%;">Total Payable Bill : </td>
-                                <td id="amnt" colspan="2">{{total_po_item_total}}</td>
+                                <td id="amnt" colspan="2">₱{{total_pending}}</td>
                             </tr>
                             {% endif %}
+
                         </tbody>
                     </table>
                 </div>
