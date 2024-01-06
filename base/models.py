@@ -155,28 +155,28 @@ class RequisitionItem(models.Model):
 
 class Supplier(models.Model):
     sup_id = models.AutoField(primary_key=True, editable=False)
-    sup_company = models.CharField(max_length=30, unique=True)
-    sup_fname = models.CharField(max_length=30)
-    sup_mname = models.CharField(max_length=30, blank=True)
-    sup_lname = models.CharField(max_length=30)
-    sup_loc = models.CharField(max_length=50)
+    sup_company = models.CharField(max_length=100, unique=True)
+    sup_fname = models.CharField(max_length=100)
+    sup_lname = models.CharField(max_length=100)
+    sup_loc = models.CharField(max_length=30)
     sup_mobile =models.CharField(max_length=11, unique=True)
-    sup_email = models.CharField(max_length=30, unique=True)
-    sup_fb_acc= models.URLField(max_length=150, unique=True)
-    sup_status = models.CharField(max_length=10, null=False, default='Active')
+    sup_email = models.CharField(max_length=100, unique=True)
+    sup_fb_acc= models.URLField(max_length=255, unique=True)
+    sup_status = models.CharField(max_length=30, null=False, default='Active')
 
     class Meta:
         db_table = 'supplier'
+        unique_together = ['sup_fname', 'sup_lname']
 
 class Contact(models.Model):
     cont_per_id = models.AutoField(primary_key=True, editable=False)
-    cont_per_fname = models.CharField(max_length=30)
-    cont_per_lname = models.CharField(max_length=30)
+    cont_per_fname = models.CharField(max_length=100)
+    cont_per_lname = models.CharField(max_length=100)
     cont_per_mobile =models.CharField(max_length=11, unique=True)
-    cont_per_email = models.CharField(max_length=30, unique=True)
-    cont_per_fb_acc= models.URLField(max_length=150, unique=True)
+    cont_per_email = models.CharField(max_length=100, unique=True)
+    cont_per_fb_acc= models.URLField(max_length=255, unique=True)
     sup_id = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=False, db_column='sup_id')
-    cont_per_status = models.CharField(max_length=10, null=False, default='Active')
+    cont_per_status = models.CharField(max_length=30, null=False, default='Active')
 
     class Meta:
          db_table = 'contact_person'
@@ -194,7 +194,7 @@ class Supplier_Item(models.Model):
 class Purchase_Order(models.Model):
     po_id = models.BigAutoField(primary_key=True, editable=False)
     po_edd = models.DateField(null=True)
-    po_status = models.CharField(max_length=10, null=False, default='PENDING')
+    po_status = models.CharField(max_length=30, null=False, default='PENDING')
     po_received_date = models.DateTimeField(null=True, blank=True)
     po_created_at = models.DateTimeField(auto_now_add=True)
     sup_id = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=False, db_column='sup_id')
@@ -208,7 +208,7 @@ class Purchase_Order_Item(models.Model):
     po_item_received_qty = models.IntegerField(null=True,default=0)
     po_item_price = models.DecimalField(max_digits=9, decimal_places=2, null=False)
     po_item_total = models.DecimalField(max_digits=9, decimal_places=2, null=False)
-    po_item_status = models.CharField(max_length=10, null=False, default='PENDING')
+    po_item_status = models.CharField(max_length=30, null=False, default='PENDING')
     po_id = models.ForeignKey(Purchase_Order, on_delete=models.CASCADE, null=False, db_column='po_id')
     prod_id = models.ForeignKey(Product, on_delete=models.CASCADE, null=False, db_column='prod_id')
 

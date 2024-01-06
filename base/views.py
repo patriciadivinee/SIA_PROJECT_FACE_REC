@@ -857,9 +857,9 @@ def add_sup(request):
     try:
         if request.method == "POST":
             supplier = Supplier()
-            supplier.sup_company = request.POST['sup_company']
-            supplier.sup_fname = request.POST['sup_fname']
-            supplier.sup_lname = request.POST['sup_lname']
+            supplier.sup_company = request.POST['sup_company'].title()
+            supplier.sup_fname = request.POST['sup_fname'].title()
+            supplier.sup_lname = request.POST['sup_lname'].title()
             supplier.sup_loc = request.POST['sup_loc']
             supplier.sup_mobile = request.POST['sup_mobile']
             supplier.sup_email = request.POST['sup_email']
@@ -886,8 +886,8 @@ def add_contact(request, sup_id):
                 pass
 
             contact = Contact()
-            contact.cont_per_fname = request.POST['cont_per_fname']
-            contact.cont_per_lname = request.POST['cont_per_lname']
+            contact.cont_per_fname = request.POST['cont_per_fname'].title()
+            contact.cont_per_lname = request.POST['cont_per_lname'].title()
             contact.cont_per_mobile = request.POST['cont_per_mobile']
             contact.cont_per_email = request.POST['cont_per_email']
             contact.cont_per_fb_acc = request.POST['cont_per_fb_acc']
@@ -915,8 +915,8 @@ def update_contact(request, cont_id):
     try:
         sup_id = request.POST['supmen']
         contact = Contact.objects.get(cont_per_id=cont_id)
-        contact.cont_per_fname = request.POST['cont_per_fname']
-        contact.cont_per_lname = request.POST['cont_per_lname']
+        contact.cont_per_fname = request.POST['cont_per_fname'].title()
+        contact.cont_per_lname = request.POST['cont_per_lname'].title()
         contact.cont_per_mobile = request.POST['cont_per_mobile']
         contact.cont_per_email = request.POST['cont_per_email']
         contact.cont_per_fb_acc = request.POST['cont_per_fb_acc']
@@ -1165,10 +1165,10 @@ def update_supplier(request, sup_id):
     try:
         if request.method == "POST":
             supplier = Supplier.objects.get(sup_id=sup_id)  # Retrieve the existing supplier
-            supplier.sup_company = request.POST['sup_company']
-            supplier.sup_fname = request.POST['sup_fname']
+            supplier.sup_company = request.POST['sup_company'].title()
+            supplier.sup_fname = request.POST['sup_fname'].title()
             # supplier.sup_status = request.POST['status']
-            supplier.sup_lname = request.POST['sup_lname']
+            supplier.sup_lname = request.POST['sup_lname'].title()
             supplier.sup_loc = request.POST['sup_loc']
             supplier.sup_mobile = request.POST['sup_mobile']
             supplier.sup_email = request.POST['sup_email']
@@ -1177,7 +1177,8 @@ def update_supplier(request, sup_id):
 
             return redirect('/supplier/' + str(sup_id) + '/details')
     except IntegrityError:
-        messages.error(request, 'Contact already exist.')
+        messages.error(request, 'Supplier already exist.')
+        return redirect('/supplier/list')
 
 def delete_supplier_item(request, sup_id, prod_id):
     try:
@@ -1255,12 +1256,15 @@ def view_po_items(request, po_id):
 @login_required(login_url='user_login')
 def urgent_req_view(request):
     po = RequisitionItem.objects.filter(req_for_purchase=True).values('prod_id').annotate(total_quantity=Sum('req_qty'))  #search for filtering in django #approved_requisitions = Requisition.objects.filter(req_id='Pending')
+
+    supplier = Supplier_Item.objects.all()
     prod = Product.objects.all()
     cnt = po.count()
     pending = Purchase_Order.objects.filter(po_status='PENDING').count()
     complete = Purchase_Order.objects.filter(po_status='COMPLETE').count()
     cancelled = Purchase_Order.objects.filter(po_status='CANCELLED').count()
     context = {'po': po,
+               'sup' : supplier, 
                'status': 'Urgent',
                'prod': prod,
                'pending': pending, 

@@ -125,6 +125,40 @@
 </div>
 </div>
 <script>
+    function validateInput() {
+        let companyName = document.getElementById('inputProdBrand').value;
+        let firstName = document.getElementById('inputProdName').value;
+        let lastName = document.getElementById('inputLastName').value;
+
+        // Check for consecutive spaces in all fields
+        if (/ {2,}/.test(companyName) || / {2,}/.test(firstName) || / {2,}/.test(lastName)) {
+            alert('Consecutive spaces are not allowed.');
+            return false;
+        }
+
+        // Check if the first character is a space
+        if (companyName.charAt(0) === ' ' || firstName.charAt(0) === ' ' || lastName.charAt(0) === ' ') {
+            alert('Input should not start with a space.');
+            return false;
+        }
+
+        // Check if the fields contain numbers
+        if (/\d/.test(firstName) || /\d/.test(lastName)) {
+            alert('Numbers are not allowed in the first or last name.');
+            return false;
+        }
+
+        return true; // Validation successful
+    }
+
+    // Attach the validation function to the form submission event
+    document.getElementById('my-form').addEventListener('submit', function (event) {
+        if (!validateInput()) {
+            event.preventDefault(); // Prevent form submission if validation fails
+        }
+    });
+
+    // Mobile number validation
     document.getElementById('inputMobileNumber').addEventListener('input', function () {
         var mobileNumber = this.value.replace(/\D/g, ''); // Remove non-numeric characters
 
