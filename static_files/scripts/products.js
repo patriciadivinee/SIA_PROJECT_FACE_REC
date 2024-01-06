@@ -36,6 +36,35 @@ $(document).ready(function() {
                 });
               }
   });
+  $.fn.dataTable.ext.search.push(
+    function(settings, searchData, index, rowData, counter) {
+        // Get the search value
+        var searchTerm = oTable.column(7).search();
+
+        // If the search term is empty, no filtering is needed
+        if (searchTerm === '') {
+            return true;
+        }
+
+        // Remove HTML tags from the data before searching
+        var columnContent = oTable.cell(index, 7).nodes().to$().html();
+
+        // Perform the search on the cleaned data
+        return columnContent.includes(searchTerm);
+    }
+);
+
+$('#category_list').on('change', function () {
+    var selectedValue = $(this).val();
+    console.log(selectedValue)
+
+    // Apply the selected filter to the DataTable
+    if (selectedValue === 'all') {
+        oTable.search('').columns().search('').draw(); // all data from table
+    } else {
+        oTable.columns(7).search(selectedValue).draw();
+    }
+});
 });
 
 
