@@ -48,9 +48,9 @@
                             </tr>
                         </thead>
                         <tbody>
-        
                             {% if prod %}
                             {% for pcat in prod %}
+                            {% if pcat.inv_qoh is not none %}
                             <tr>
                                 <td>{{ pcat.prod_id }}</td>
                                 <td>{{ pcat.prod_brand }}</td>
@@ -58,8 +58,8 @@
                                 <td>{{ pcat.inv_qoh }}</td>
                                 <td><button class="btn btn-sm btn-success" data-id="{{ pcat.prod_id }}" onclick="transferData(this, '{{ pcat.prod_id }}')"><i class="fa-solid fa-plus"></i></button></td>
                             </tr>
+                            {% endif %}
                             {% endfor %}
-        
                             {% endif %}
                         </tbody>
                     </table>
