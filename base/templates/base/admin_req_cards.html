@@ -2,7 +2,7 @@
 {% load static %} 
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/req.css' %}">
+<link rel="stylesheet" href="{% static 'css/requi.css' %}">
 {% if access_denied %}
     <div class="alert alert-danger" role="alert">
         <strong>Access Denied!</strong> You don't have permission to access this page.
@@ -22,14 +22,14 @@
                 </div>
                 </div>
             </div>
-        <div id="lowStock">
+        <div id="complete">
             <div class="cards border {% if status == 'Received' %}active{% endif %}">
                 <a href="{% url 'admin_requisition' req_status='received' %}" style="color: black;">
                     <div class="numbers">{{ received }}</div>
                     <div class="cardnames">Complete</div>
                 </a>
                 <div class="iconbx">
-                    <i class="fa-solid fa-hourglass-half"></i>
+                    <i class="fa-regular fa-calendar-check"></i>
                 </div>
                 </div>
             </div>
