@@ -584,9 +584,12 @@ def category_add(request):
 
 @login_required(login_url='user_login')
 def product_details(request, prod_id):
-    prod = Product.objects.get(pk=prod_id)
+    try:
+        prod = Product.objects.get(pk=prod_id)
 
-    return render(request, 'base/product_details.html', {'prod': prod, 'nav': 'product'} )
+        return render(request, 'base/product_details.html', {'prod': prod, 'nav': 'product'} )
+    except Product.DoesNotExist:
+        return render(request, 'base/error.html')
 
 @login_required(login_url='user_login')
 @csrf_exempt
@@ -609,7 +612,11 @@ def add_inventory(request):
         inv_qoh = request.POST.get('prod_stock')
         try:
             inv_item = Inventory.objects.get(prod_id=fk)
-            messages.error(request,'Product already exist in inventory')
+            new_stock = inv_item.inv_qoh + int(inv_qoh)
+            inv_item.inv_qoh = new_stock
+            inv_item.save()
+            
+            # messages.error(request,'Product already exist in inventory')
         except Inventory.DoesNotExist:
             inv = Inventory(request.POST)
 
