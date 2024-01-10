@@ -19,7 +19,9 @@ urlpatterns = [
     path('products/search', views.search_product, name='search_product'),
     path('products/<prod_id>/details', views.product_details, name='product_details'),
     path('employee/add', views.register_acc, name='register_acc'),
-    path('employee/register', views.register, name='register'),
+    path('superadmin/register', views.superview, name='superview'),
+    path('employee/add/admin', views.create_superuser, name='register_admin'),
+    path('employee/register_superuser', views.register_superuser, name='register_superuser'),    path('employee/register', views.register, name='register'),
     path('user_login', views.user_login, name='user_login'),
     path('employee/logout', views.logout_emp, name='logout_emp'),
     path('employee/<int:emp_id>/edit', views.edit_employee, name='edit_employee'),
@@ -67,6 +69,9 @@ urlpatterns = [
     path('contact/<int:cont_id>/update', views.update_contact, name='update_contact'),
     path('contact/<int:sup_id>/<int:cont_id>/edit', views.edit_contact, name='edit_contact'),
     path('purchase_history/', views.purchase_history, name='purchase_history'),
+    path('forgot_pass', views.forgot_pass, name='forgot_pass'),
+    path('custom_password_reset', views.custom_password_reset, name='custom_password_reset'),
+    path('reset/<uidb64>/<token>/', views.password_reset_confirm,  name='password_reset_confirm'),
 ]
 
 if settings.DEBUG:
