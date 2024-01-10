@@ -45,7 +45,7 @@ $("#buttones").click(function (event) {
             }
         });
     } else {
-        window.alert('Enter product ID');
+        window.alert('Select supplier');
     }
 });
 function deleteRow(button) {

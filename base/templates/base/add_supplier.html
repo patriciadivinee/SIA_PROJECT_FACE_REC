@@ -130,6 +130,14 @@
         let firstName = document.getElementById('inputProdName').value;
         let lastName = document.getElementById('inputLastName').value;
 
+        const endswithspace = (value) => value.charAt(value.length - 1) === ' ';
+
+        if (
+            endswithspace(firstName) || endswithspace(lastName) || endswithspace(companyName)
+        ) {
+            alert('End spaces are not allowed.');
+            return false;
+        }
         // Check for consecutive spaces in all fields
         if (/ {2,}/.test(companyName) || / {2,}/.test(firstName) || / {2,}/.test(lastName)) {
             alert('Consecutive spaces are not allowed.');

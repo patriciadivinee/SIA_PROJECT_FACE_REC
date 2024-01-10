@@ -39,7 +39,7 @@
                   <th>Quantity Requested</th>
                   <th>Brand</th>
                   <th>Name</th>
-                  <th>Supplier #</th>
+                  <th>Supplier</th>
                   <th>Price</th>
                 </tr>
               </thead>
@@ -65,9 +65,13 @@
                     <td class="marquee">
                         {% for prod_item in prod %}
                         {% for sup_item in sup %}
+                        {% for sup_name in sup1%}
                         {% if sup_item.prod_id_id == prod_item.prod_id %}
-                        {{ sup_item.sup_id_id }}<br>
+                        {% if sup_name.sup_id == sup_item.sup_id_id%}
+                        {{ sup_item.sup_id_id }} {{ sup_name.sup_company}}<br>
                         {% endif %}
+                        {% endif %}
+                        {% endfor %}
                         {% endfor %}
                         {% endfor %}
                     </td>
