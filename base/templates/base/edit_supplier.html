@@ -138,22 +138,29 @@
     function validateInput() {
         let supFirstName = document.getElementById('inputProdName').value;
         let supLastName = document.getElementById('inputLastName').value;
+        let companyName = document.getElementById('inputProdBrand').value;
 
         // Function to check for consecutive spaces and leading space
         const hasConsecutiveSpaces = (value) => / {2,}/.test(value);
         const startsWithSpace = (value) => value.charAt(0) === ' ';
+        const endswithspace = (value) => value.charAt(value.length - 1) === ' ';
         const hasNumber = (value) => /\d/.test(value);
 
         // Validate the input fields
         if (
-            hasConsecutiveSpaces(supFirstName) || hasConsecutiveSpaces(supLastName)
+            hasConsecutiveSpaces(supFirstName) || hasConsecutiveSpaces(supLastName) || hasConsecutiveSpaces(companyName)
         ) {
             alert('Consecutive spaces are not allowed.');
             return false;
         }
-
         if (
-            startsWithSpace(supFirstName) || startsWithSpace(supLastName)
+            endswithspace(supFirstName) || endswithspace(supLastName) || endswithspace(companyName)
+        ) {
+            alert('End spaces are not allowed.');
+            return false;
+        }
+        if (
+            startsWithSpace(supFirstName) || startsWithSpace(supLastName) || startsWithSpace(companyName)
         ) {
             alert('Input should not start with a space.');
             return false;

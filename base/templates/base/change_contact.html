@@ -98,6 +98,15 @@
         const hasConsecutiveSpaces = (value) => / {2,}/.test(value);
         const startsWithSpace = (value) => value.charAt(0) === ' ';
         const hasNumber = (value) => /\d/.test(value);
+        const endswithspace = (value) => value.charAt(value.length - 1) === ' ';
+
+        // Validate the input fields
+        if (
+            endswithspace(cpFirstName) || endswithspace(cpLastName)
+        ) {
+            alert('End spaces are not allowed.');
+            return false;
+        }
 
         // Validate the input fields
         if (

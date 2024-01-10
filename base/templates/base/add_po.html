@@ -25,8 +25,17 @@
                                 <div class="input-group-prepend align-self-center">
                                     <span class="input-group-text bg-transparent border border-0"><i class="fa-solid fa-magnifying-glass"></i></span>
                                 </div>
-                                <input id="search_id" type="text" oninput="hasText()" class="form-control border-0 shadow-none" aria-label="Small" aria-describedby="inputGroup-sizing-sm" placeholder="Search supplier">
-                
+                                
+                                <select class="form-select border border-0" style="border-radius: 20px; margin-left: 0px; width: 190px;" id="search_id" name="supplier_company">
+                                    <option value="">Select Supplier</option>
+                                    {% for supplier in sup %}
+                                    {% if request.GET.supplier_company == supplier.sup_company %}
+                                    <option value="{{ supplier.sup_id }}" selected>{{ supplier.sup_company }}</option>
+                                    {% else %}
+                                    <option value="{{ supplier.sup_id }}">{{ supplier.sup_company }}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
                                 <div class="input-group-prepend ml-3 align-self-center">
                                     <span class="input-group-text bg-transparent m-0 border border-0">
                                         <button id="clear_btn" onclick="clearText()" class="btn btn-sm m-0 border border-0 circle" style="display: none;">
@@ -131,7 +140,7 @@
 <script src='https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js'></script>
 <script src='https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js'></script>
-<script src="{% static 'scripts/po_add.js' %}"></script>
+<script src="{% static 'scripts/po_addd.js' %}"></script>
 <script>
     // Function to check if destinationTable is empty
     function isDestinationTableEmpty() {

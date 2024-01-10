@@ -1174,7 +1174,9 @@ def po_list(request, po_status):
 
 @login_required(login_url='user_login')
 def view_po(request):
-    return render(request, 'base/add_po.html', {'nav': 'po'})
+    sup = Supplier.objects.all()
+
+    return render(request, 'base/add_po.html', {'nav': 'po', 'sup' : sup})
 
 @login_required(login_url='user_login')
 def delete_po(request, po_status, po_id):
@@ -1331,12 +1333,14 @@ def urgent_req_view(request):
     po = RequisitionItem.objects.filter(req_for_purchase=True).values('prod_id').annotate(total_quantity=Sum('req_qty'))  #search for filtering in django #approved_requisitions = Requisition.objects.filter(req_id='Pending')
 
     supplier = Supplier_Item.objects.all()
+    sup = Supplier.objects.all()
     prod = Product.objects.all()
     cnt = po.count()
     pending = Purchase_Order.objects.filter(po_status='PENDING').count()
     complete = Purchase_Order.objects.filter(po_status='COMPLETE').count()
     cancelled = Purchase_Order.objects.filter(po_status='CANCELLED').count()
-    context = {'po': po,
+    context = {'sup1': sup,
+               'po': po,
                'sup' : supplier, 
                'status': 'Urgent',
                'prod': prod,
