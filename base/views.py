@@ -1,4 +1,12 @@
 from datetime import timedelta
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.contrib.auth.tokens import default_token_generator
+from django.shortcuts import render, redirect
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.http import HttpResponseBadRequest
+from django.utils.http import urlsafe_base64_decode
 import datetime
 import re
 import json
@@ -164,7 +172,9 @@ def user_login(request):
             print("Authentication failed")
             return render(request, 'base/login.html')
 
-    return render(request, 'base/login.html')
+    superadmin_ = CustomUser.objects.filter(is_superuser = True).count()
+
+    return render(request, 'base/login.html', {'superadmin': superadmin_})
 
 def logout_emp(request):
     logout(request)
@@ -172,7 +182,7 @@ def logout_emp(request):
 
 @login_required(login_url='user_login')
 @csrf_exempt
-def register(request):
+def create_employee_and_user(request, is_superuser=False):
     try:
         if request.method == 'POST':
             emp_fname = request.POST.get('firstname')
@@ -187,15 +197,58 @@ def register(request):
 
             if 'imagefile' in request.FILES:
                 emp_image = request.FILES['imagefile']
+                
+            else:
+                messages.error(request, 'Image is required.')
+                return redirect('register_acc')
 
-            employee = Employee.objects.create(emp_fname = emp_fname, emp_lname = emp_lname,
-                                                emp_gender = emp_gender, emp_dob = emp_dob, emp_mobile = emp_mobile, 
-                                                emp_email = emp_email, emp_password = emp_password, emp_image = emp_image,
-                                                emp_address = emp_address)
+            
+            if not any([emp_fname, emp_lname, emp_gender, emp_address, emp_dob, emp_mobile, emp_email]):
+                messages.error(request, 'All fields are required.')
+                return redirect('register_acc')
+            
+            if not emp_fname.strip() or not emp_lname.strip():
+                messages.error(request, "Firstname and Lastname are required.")
+                return redirect('register_acc')
+            
+            if re.search(r'\s{2,}', emp_fname) or re.search(r'\s{2,}', emp_lname):
+                messages.error(request, "Consecutive whitespaces are not allowed in Firstname or Lastname.")
+                return redirect('register_acc')
+
+            if re.search(r'[^a-zA-Z\s]', emp_fname) or re.search(r'[^a-zA-Z\s]', emp_lname):
+                messages.error(request, "Special characters are not allowed in Firstname or Lastname.")
+                return redirect('register_acc')
+
+            if emp_gender not in ["Male", "Female"]:
+                messages.error(request, "Gender field required")
+                return redirect('register_acc')
+
+            if any(char.isdigit() for char in emp_fname) or any(char.isdigit() for char in emp_lname):
+                messages.error(request, "First or Last names cannot contain digits")
+                return redirect('register_acc')
+
+            if not re.match(r'^(\+?63|0)9\d{9}$', emp_mobile):
+                messages.error(request, "Invalid mobile number format")
+                return redirect('register_acc')
+
+            if not re.match(r'^[a-zA-Z0-9._%+-]+@gmail\.com$', emp_email):
+                messages.error(request, "Invalid Gmail email format")
+                return redirect('register_acc')
+            
+            
+
+
+            employee = Employee.objects.create(emp_fname=emp_fname, emp_lname=emp_lname,
+                                               emp_gender=emp_gender, emp_dob=emp_dob, emp_mobile=emp_mobile,
+                                               emp_email=emp_email, emp_password=emp_password, emp_image=emp_image,
+                                               emp_address=emp_address)
             employee.save()
 
-            user = CustomUser.objects.create(email = emp_email, first_name = emp_fname,
-                                                last_name = emp_lname, emp_id = employee.emp_id)
+            user = CustomUser.objects.create(email=emp_email, first_name=emp_fname,
+                                            last_name=emp_lname, emp_id=employee.emp_id, is_staff=is_superuser,
+                                            is_superuser=is_superuser, emp_access=is_superuser, is_active=True)
+
+            
 
             user.set_password(encrypted)
             user.save()
@@ -203,10 +256,98 @@ def register(request):
 
             messages.success(request, "Registration successful.")
             return render(request, 'base/register.html')
+
     except IntegrityError:
         messages.error(request, 'Email already exists')
 
     return redirect('register_acc')
+
+def superview(request):
+    return render(request, 'base/register_admin.html')
+def create_superuser(request):
+    try:
+        if request.method == 'POST':
+            emp_fname = request.POST.get('firstname')
+            emp_lname = request.POST.get('lastname')
+            emp_gender = request.POST.get('gender')
+            emp_address = request.POST.get('address')
+            emp_dob = request.POST.get('dob')
+            emp_mobile = request.POST.get('mobile')
+            emp_email = request.POST.get('emailaddress')
+            emp_pass = request.POST.get('password')
+            conpass = request.POST.get('conpass')
+
+            if 'imagefile' in request.FILES:
+                emp_image = request.FILES['imagefile']
+                
+            else:
+                messages.error(request, 'Image is required.')
+                return redirect('superview')
+            
+            if not any([emp_fname, emp_lname, emp_gender, emp_address, emp_dob, emp_mobile, emp_email]):
+                messages.error(request, 'All fields are required.')
+                return redirect('superview')
+            
+            if not emp_fname.strip() or not emp_lname.strip():
+                messages.error(request, "Firstname and Lastname are required.")
+                return redirect('superview')
+            
+            if re.search(r'\s{2,}', emp_fname) or re.search(r'\s{2,}', emp_lname):
+                messages.error(request, "Consecutive whitespaces are not allowed in Firstname or Lastname.")
+                return redirect('superview')
+
+            if re.search(r'[^a-zA-Z\s]', emp_fname) or re.search(r'[^a-zA-Z\s]', emp_lname):
+                messages.error(request, "Special characters are not allowed in Firstname or Lastname.")
+                return redirect('superview')
+
+            if emp_gender not in ["Male", "Female"]:
+                messages.error(request, "Gender field required")
+                return redirect('superview')
+
+            if any(char.isdigit() for char in emp_fname) or any(char.isdigit() for char in emp_lname):
+                messages.error(request, "First or Last names cannot contain digits")
+                return redirect('superview')
+
+            if not re.match(r'^(\+?63|0)9\d{9}$', emp_mobile):
+                messages.error(request, "Invalid mobile number format")
+                return redirect('superview')
+
+            if not re.match(r'^[a-zA-Z0-9._%+-]+@gmail\.com$', emp_email):
+                messages.error(request, "Invalid Gmail email format")
+                return redirect('superview')
+            
+            if emp_pass != conpass:
+                messages.error(request, "Password does not match the confirm password.")
+                return redirect('superview')
+
+            employee = Employee.objects.create(emp_fname=emp_fname, emp_lname=emp_lname,
+                                            emp_gender=emp_gender, emp_dob=emp_dob, emp_mobile=emp_mobile,
+                                            emp_email=emp_email, emp_password=emp_pass, emp_image=emp_image,
+                                            emp_address=emp_address)
+            employee.save()
+
+            user = CustomUser.objects.create(email=emp_email, first_name=emp_fname,
+                                            last_name=emp_lname, emp_id=employee.emp_id, is_staff=True,
+                                            is_superuser=True, emp_access=True, is_active=True)
+
+            
+
+            user.set_password(emp_pass)
+            user.save()
+            send_welcome_email(employee)
+
+            messages.success(request, "Registration successful.")
+            return redirect('user_login')
+
+    except IntegrityError:
+        messages.error(request, 'Email already exists')
+        return redirect('superview')
+
+def register(request):
+    return create_employee_and_user(request, is_superuser=False)
+
+def register_superuser(request):
+    return create_employee_and_user(request, is_superuser=True)
 
 def send_welcome_email(employee):
     message = (
@@ -235,9 +376,11 @@ def register_acc(request):
     return render(request, 'base/register.html', {'nav': 'employee'})
 
 @login_required(login_url='user_login')
+@emp_access
 def viewaccount(request):
-    employees = Employee.objects.all().order_by('emp_created_at')
-    context ={'employees': employees, 'nav': 'employee'}
+    superusers = CustomUser.objects.filter(is_superuser=True)
+    employees = Employee.objects.exclude(customuser__in=superusers)
+    context = {'employees': employees, 'nav': 'employee'}
     return render(request, 'base/employee_lists.html', context)
 
 @login_required(login_url='user_login')
@@ -261,48 +404,90 @@ def delete(request, emp_id):
 
 @login_required(login_url='user_login')
 def update(request, emp_id):
-    if request.method == 'POST':
-        employee = Employee.objects.get(emp_id=emp_id)
-        user = employee.customuser  
-        user_copy = user.__class__.objects.get(pk=user.pk)
-
-        employee.emp_fname = request.POST.get('firstname')
-        employee.emp_lname = request.POST.get('lastname')
-        employee.emp_gender = request.POST.get('gender')
-        employee.emp_dob = request.POST.get('dob')
-        employee.emp_mobile = request.POST.get('mobile')
-        employee.emp_email = request.POST.get('emailaddress')
-        employee.emp_status = request.POST.get('status') == 'true'
-        
-        if 'imagefile' in request.FILES:
-            new_image = request.FILES['imagefile']
-
-            if employee.emp_image:
-                default_storage.delete(employee.emp_image.name)
-            employee.emp_image.save(new_image.name, new_image)
-
-
-        user.email = employee.emp_email
-        user.first_name = employee.emp_fname
-        user.last_name = employee.emp_lname
-        user.is_active = request.POST.get('status') == 'true'
-        user.is_staff = request.POST.get('staff_admin_access') == 'true'
-        user.is_superuser = request.POST.get('superadmin') == 'true'
-        user.emp_access = request.POST.get('emp_access') == 'true'
-
-
-        employee.save()
-        user.save()
-        
-
-        messages.success(request, "Account has been updated successfully")
-        return redirect('update_employee', emp_id=employee.emp_id)  
-    else:
+    try:
         employee = Employee.objects.get(emp_id=emp_id)
         user = employee.customuser
         user_copy = user.__class__.objects.get(pk=user.pk)
-        context = {"employee": employee, "user_copy": user_copy}
+        context = {"employee": employee, 'this_user': user, "user_copy": user_copy, 'user_copy': user, 'user': request.user}
+
+        new_image = None
+        if request.method == 'POST':
+            employee.emp_fname = request.POST.get('firstname')
+            employee.emp_lname = request.POST.get('lastname')
+            employee.emp_gender = request.POST.get('gender')
+            employee.emp_dob = request.POST.get('dob')
+            employee.emp_address = request.POST.get('address')
+            employee.emp_mobile = request.POST.get('mobile')
+            employee.emp_email = request.POST.get('emailaddress')
+            employee.emp_status = request.POST.get('status') == 'true'
+
+            if 'imagefile' in request.FILES:
+                new_image = request.FILES['imagefile']
+
+                if employee.emp_image:
+                    default_storage.delete(employee.emp_image.name)
+                employee.emp_image.save(new_image.name, new_image)
+
+
+            user.email = employee.emp_email
+            user.first_name = employee.emp_fname
+            user.last_name = employee.emp_lname
+            user.is_active = request.POST.get('status') == 'true'
+            user.is_staff = request.POST.get('staff_admin_access') == 'true'
+            user.is_superuser = request.POST.get('superadmin') == 'true'
+            user.emp_access = request.POST.get('emp_access') == 'true'
+
+            # Validate email uniqueness
+            if CustomUser.objects.exclude(pk=user.pk).filter(email=employee.emp_email).exists():
+                messages.error(request, "Email is already taken")
+                return redirect('update_employee', emp_id=employee.emp_id)
+
+            # Additional validation checks
+            try:
+                validate_email(employee.emp_email)
+            except ValidationError:
+                messages.error(request, "Invalid email format")
+                return redirect('update_employee', emp_id=employee.emp_id)
+
+            if not employee.emp_fname.strip() or not employee.emp_lname.strip():
+                messages.error(request, "Firstname and Lastname are required.")
+                return redirect('update_employee', emp_id=employee.emp_id)
+            
+            if re.search(r'\s{2,}', employee.emp_fname) or re.search(r'\s{2,}', employee.emp_lname):
+                messages.error(request, "Consecutive whitespaces are not allowed in Firstname or Lastname.")
+                return redirect('update_employee', emp_id=employee.emp_id)
+
+            if re.search(r'[^a-zA-Z\s]', employee.emp_fname) or re.search(r'[^a-zA-Z\s]', employee.emp_lname):
+                messages.error(request, "Special characters are not allowed in Firstname or Lastname.")
+                return redirect('update_employee', emp_id=employee.emp_id)
+
+            if employee.emp_gender not in ["Male", "Female"]:
+                messages.error(request, "Invalid gender value")
+                return redirect('update_employee', emp_id=employee.emp_id)
+
+            if any(char.isdigit() for char in employee.emp_fname) or any(char.isdigit() for char in employee.emp_lname):
+                messages.error(request, "First or Last names cannot contain digits")
+                return redirect('update_employee', emp_id=employee.emp_id)
+
+            if not re.match(r'^(\+?63|0)9\d{9}$', employee.emp_mobile):
+                messages.error(request, "Invalid mobile number format")
+                return redirect('update_employee', emp_id=employee.emp_id)
+
+            if not re.match(r'^[a-zA-Z0-9._%+-]+@gmail\.com$', employee.emp_email):
+                messages.error(request, "Invalid Gmail email format")
+                return redirect('update_employee', emp_id=employee.emp_id)
+
+            # Save changes
+            employee.save()
+            user.save()
+            messages.success(request, "Account has been updated successfully")
+            return redirect('update_employee', emp_id=employee.emp_id)
+
         return render(request, 'base/updateaccount.html', context)
+
+    except IntegrityError:
+        messages.error(request, "Firstname, Lastname, and DOB must be unique.")
+        return redirect('update_employee', emp_id=employee.emp_id)
 
 @login_required(login_url='user_login')
 def employee_details(request, emp_id):
@@ -1417,3 +1602,59 @@ def confirm_po(request):
 
     # Handle the case when the request method is not POST (optional)
     return redirect('purchase/order/pending/')
+
+def forgot_pass(request):
+    return render(request, 'base/forgot_pass.html')
+
+def custom_password_reset(request):
+    if request.method == 'POST':
+        email = request.POST.get('emailaddress')
+        try:
+            user = CustomUser.objects.get(email=email)
+        except CustomUser.DoesNotExist:
+            return render(request, 'base/forgot_pass.html')
+
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+
+        reset_url = f"http://{request.get_host()}/reset/{uidb64}/{token}/"
+
+        send_mail(
+            'Password Reset',
+            f'Click the following link to reset your password: {reset_url}',
+            'ICC_Chrishna@gmail.com',
+            [email],
+            fail_silently=False,
+        )
+
+        # Display SweetAlert notification on success
+        success_message = "Password reset instructions sent to your email. Check your inbox (and spam folder)."
+        return render(request, 'base/forgot_pass.html', {'success_message': success_message})
+
+    return HttpResponseBadRequest("Invalid request.")
+
+def password_reset_confirm(request, uidb64, token):
+    if request.method == 'POST':
+        # Decode the UID to get the user ID
+        user_id = int(urlsafe_base64_decode(uidb64).decode('utf-8'))
+
+        # Get the user object based on the user ID
+        user = CustomUser.objects.get(id=user_id)
+        
+        newpass = request.POST.get('newpassword')
+        confirmpass = request.POST.get('confirmpassword')
+        
+        if newpass == confirmpass:
+            # Check if the token is valid
+            if default_token_generator.check_token(user, token):
+                employee = user.emp
+                employee.emp_password = newpass
+                employee.save()
+                user.set_password(newpass)
+                user.save()
+                return redirect(user_login)
+            else:
+                return render(request, 'base/forgot_pass_change.html', {'uidb64': uidb64, 'token': token})
+        else:
+            return render(request, 'base/forgot_pass_change.html', {'uidb64': uidb64, 'token': token})
+    return render(request, 'base/forgot_pass_change.html', {'uidb64': uidb64, 'token': token})

@@ -18,33 +18,25 @@
         <div class="login-wrap p-4 p-md-5">
           <div class="d-flex">
             <div class="w-100">
-              <h3 class="mb-4">Sign In</h3>
+              <h3 class="mb-4">Password Reset</h3>
             </div>
           </div>
-          <form class="login-form" action="{% url 'user_login' %}" method="POST" enctype="multipart/form-data">
+          <form class="login-form" action="{% url 'password_reset_confirm' uidb64=uidb64 token=token %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
+            <input type="hidden" name="uidb64" value="{{ uidb64 }}">
+            <input type="hidden" name="token" value="{{ token }}">
             <div class="form-group">
-              <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-user"></span></div>
-              <input type="text" class="form-control rounded-left" placeholder="Email" name="emailaddress" required>
+              <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-lock"></span></div>
+              <input type="password" class="form-control rounded-left" placeholder="New Password" name="newpassword" required>
             </div>
             <div class="form-group">
               <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-lock"></span></div>
-              <input type="password" class="form-control rounded-left" placeholder="Password" name="password" required>
-            </div>
-            <div class="form-group d-flex align-items-center">
-              <div class="w-100">
-                <a href="{% url 'forgot_pass' %}" class="forgot-password-link">Forgot Password?</a>
-              </div>
+              <input type="password" class="form-control rounded-left" placeholder="Confirm Password" name="confirmpassword" required>
             </div>
             <div class="form-group mt-4">
               <div class="w-100 text-center">
-                <button type="submit" class="btn btn-primary rounded submit">Login</button>
+                <button type="submit" class="btn btn-primary rounded submit">Change Password</button>
               </div>
-              {% if superadmin == 0 %}
-              <div class="w-100 text-center">
-                <a href="{% url 'superview' %}">Create Superuser</a>
-              </div>
-              {% endif %}
             </div>
           </form>
           <script src="{% static 'js/jquery.min.js' %}"></script>

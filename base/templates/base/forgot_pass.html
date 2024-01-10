@@ -18,42 +18,43 @@
         <div class="login-wrap p-4 p-md-5">
           <div class="d-flex">
             <div class="w-100">
-              <h3 class="mb-4">Sign In</h3>
+              <h3 class="mb-4">Forgot Password</h3>
             </div>
           </div>
-          <form class="login-form" action="{% url 'user_login' %}" method="POST" enctype="multipart/form-data">
+          <form class="login-form" action="{% url 'custom_password_reset' %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
               <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-user"></span></div>
               <input type="text" class="form-control rounded-left" placeholder="Email" name="emailaddress" required>
             </div>
-            <div class="form-group">
-              <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-lock"></span></div>
-              <input type="password" class="form-control rounded-left" placeholder="Password" name="password" required>
-            </div>
-            <div class="form-group d-flex align-items-center">
-              <div class="w-100">
-                <a href="{% url 'forgot_pass' %}" class="forgot-password-link">Forgot Password?</a>
-              </div>
+            <p>Enter your e-mail address to obtain new password</p>
             </div>
             <div class="form-group mt-4">
               <div class="w-100 text-center">
-                <button type="submit" class="btn btn-primary rounded submit">Login</button>
+                <button type="submit" class="btn btn-primary rounded submit">Send Email</button><br>
+                <a href="{% url 'user_login' %}">Back</a>
               </div>
-              {% if superadmin == 0 %}
-              <div class="w-100 text-center">
-                <a href="{% url 'superview' %}">Create Superuser</a>
-              </div>
-              {% endif %}
             </div>
           </form>
           <script src="{% static 'js/jquery.min.js' %}"></script>
           <script src="{% static 'js/popper.min.js' %}"></script>
           <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         </div>
       </div>
     </div>
   </div>
 </section>
+{% if success_message %}
+  <script>
+    // Display SweetAlert notification
+    Swal.fire({
+      title: 'Password Reset Email Sent',
+      text: '{{ success_message }}',
+      icon: 'success',
+      confirmButtonText: 'OK'
+    });
+  </script>
+{% endif %}
 </body>
 </html>
