@@ -100,7 +100,6 @@
 </div>
 <script src="{% static 'scripts/required_validation.js' %}"></script>
 <script>
-    <script>
     $(document).ready(function() {
         $("#register-superadmin").click(function() {
             $("#my-form").attr("action", "{% url 'register_admin' %}");
@@ -133,7 +132,6 @@
             });
         });
     });
-</script>
 </script>
 </body>
 <script src="{% static 'scripts/temp.js' %}"></script>
