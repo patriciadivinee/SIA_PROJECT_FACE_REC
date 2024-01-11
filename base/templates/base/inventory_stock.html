@@ -38,8 +38,8 @@
                     <th scope="col" style="width: 5%;">#</th>
                     <th scope="col" style="width: 20%;">Product Brand</th>
                     <th scope="col" style="width: 30%;">Product Name</th>
-                    <th scope="col">Product Price</th>
-                    <th scope="col" style="width: 8%;">Stock</th>
+                    <th scope="col">Price</th>
+                    <th scope="col" style="width: 6%;">Stock</th>
                     <th scope="col" style="width: 11%;">Reorder Point</th>
                     <th scope="col" style="width: 10%;">Status</th>
                     <th scope="col">Action</th>
@@ -51,11 +51,12 @@
                       <th scope="row">{{inv.prod_id.prod_id}}</th>
                           <td>{{inv.prod_id.prod_brand}}</td>
                           <td>{{inv.prod_id.prod_name}} {{inv.prod_id.prod_pack_size}}</td>
-                          <td>{{inv.prod_id.prod_price}}</td>
+                          <td>₱{{inv.prod_id.prod_price}}</td>
                           <td>{{inv.inv_qoh}}</td>
                           <td>{{inv.inv_reorder}}</td>
                           <td>{{inv.inv_status}}</td>
-                          <td><a href="{% url 'product_details' inv.prod_id.prod_id %}" class="btn btn-sm btn-info"><i class="fa-regular fa-eye"></i></i></a>
+                          <td><a href="{% url 'product_details' inv.prod_id.prod_id %}" class="btn btn-sm btn-info"><i class="fa-regular fa-eye"></i></a>
+                            <!-- <button type="button"class="btn btn-sm btn-warning"><i class="fa-regular fa-pen-to-square"></i></button> -->
                   </tr>
                 {% endfor %}
               </tbody>
@@ -84,25 +85,55 @@
                   <label for="prod_deets" class="form-label">Product</label>
                   <input type="text" class="form-control" id="prod_deets" placeholder="Product Details" readonly>
               </div>
-              <div class="col-4">
+              <div class="col-3">
                   <label for="prod_price" class="form-label">Price</label>
-                  <input type="text" class="form-control" id="prod_price" placeholder="Product Price" readonly>
+                  <input type="text" class="form-control" id="prod_price" placeholder="Price" readonly>
               </div>
               <div class="col-4">
                 <label for="prod_stock" class="form-label">Stock</label>
-                <input type="number" class="form-control" min="1" name="prod_stock" id="prod_stock" placeholder="Enter Stock" required>
+                <input type="number" class="form-control" min="1" name="prod_stock" id="prod_stock" placeholder="Stock" required>
             </div>
-            <div class="col-4">
+            <!-- <div class="col-3">
                 <label for="prod_stock" class="form-label">Reorder Point</label>
+                {}
                 <input type="number" class="form-control" min="1" name="reorder" id="reorder" placeholder="Enter RP" required>
+            </div> -->
+            <div class="col-4">
+                <label for="reorder" class="form-label">Reorder Point</label>
+                <div class="input-group">
+                    <input id="reorder" type="number" placeholder="Reorder Point" name="reorder" class="form-control" min="1" aria-describedby="inputGroupPrepend" spellcheck="false" required/>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-primary toggle" type="button" onclick="toggleEdit()" style="display: none;" id="edbtn">
+                            <i id="editlogo" class="fa-regular fa-pen-to-square"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Add Stock</button>
+            <button type="submit" class="btn btn-primary" style="display: block;" id="add">Add Stock</button>
+            <button type="submit" class="btn btn-primary" style="display: none;" id="update">Update</button>
         </div>
           </form>
       </div>
     </div>
 </div>
+<script>
+    const toggle = document.querySelector('.toggle');
+    const input = document.getElementById('reorder');
+    const qoh = document.getElementById('prod_stock');
+
+    toggle.addEventListener('click', () => {
+        if (input.readOnly) {
+            input.readOnly = false;
+            qoh.readOnly = false;
+            toggle.innerHTML = '<i id="editlogo" class="fa-solid fa-xmark"></i>';
+        } else {
+            input.readOnly = true;
+            qoh.readOnly = true;
+            toggle.innerHTML = '<i id="editlogo" class="fa-regular fa-pen-to-square"></i>';
+        }
+    });
+</script>
 {% endblock table %}

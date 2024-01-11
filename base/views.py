@@ -805,7 +805,15 @@ def search_product(request):
         search_id = request.POST.get('search_id')
         try:
             prod = Product.objects.get(pk=search_id)
-            data = {'brand': prod.prod_brand, 'name': prod.prod_name, 'size': prod.prod_pack_size, 'price': prod.prod_price, 'desc': prod.prod_desc}  # Replace 'some_field' with the field you want to send in the response
+            inv = Inventory.objects.get(prod_id = search_id)
+            data = {'brand': prod.prod_brand, 'name': prod.prod_name, 'size': prod.prod_pack_size, 
+                    'price': prod.prod_price, 'desc': prod.prod_desc, 'reorder': inv.inv_reorder,
+                    'qoh': inv.inv_qoh}  # Replace 'some_field' with the field you want to send in the response
+            return JsonResponse(data)
+        except Inventory.DoesNotExist:
+            prod = Product.objects.get(pk=search_id)
+            data = {'brand': prod.prod_brand, 'name': prod.prod_name, 'size': prod.prod_pack_size, 
+                    'price': prod.prod_price, 'desc': prod.prod_desc}  # Replace 'some_field' with the field you want to send in the response
             return JsonResponse(data)
         except Product.DoesNotExist:
             return JsonResponse({'error': 'Product not found'})
@@ -820,12 +828,11 @@ def add_inventory(request):
         rp = request.POST.get('reorder')
         try:
             inv_item = Inventory.objects.get(prod_id=fk)
-            new_stock = inv_item.inv_qoh + int(inv_qoh)
-            inv_item.inv_qoh = new_stock
+            inv_item.inv_qoh = inv_qoh
             inv_item.inv_reorder = rp
             inv_item.save()
             
-            # messages.error(request,'Product already exist in inventory')
+            # messages.error(request,'Product already exist in inventory. Do update!')
         except Inventory.DoesNotExist:
             inv = Inventory(request.POST)
 

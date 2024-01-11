@@ -28,10 +28,39 @@ $(document).ready(function () {
                 success: function (data) {
                     if ('error' in data) {
                         window.alert('Error: Product not found');
+                        $('#reorder').val('');
+                        $('#reorder').prop('readonly', false);
+                        $('#prod_stock').val('');
+                        $('#prod_stock').prop('readonly', false);
+                        $('#edbtn').css('display', 'none');
+                        $('#update').css('display', 'none');
+                        $('#add').css('display', 'block');
+                        clear_input();
+                    } else if ('edit' in data) {
+                        window.alert('Error: Product already exist in inventory. Do update!');
                         clear_input();
                     } else {
                         $('#prod_deets').val(data.brand + ' ' + data.name + ' ' + data.size);
                         $('#prod_price').val(data.price);
+                        $('#prod_stock').val(data.qoh);
+                        if (data.reorder & data.qoh) {
+                            $('#reorder').val(data.reorder);
+                            $('#prod_stock').val(data.qoh);
+                            $('#prod_stock').prop('readonly', true);
+                            $('#reorder').prop('readonly', true);
+                            $('#edbtn').css('display', 'block');
+                            $('#update').css('display', 'block');
+                            $('#add').css('display', 'none');
+                            $('#edbtn').html('<i class="fa-regular fa-pen-to-square"></i>');
+                        } else {
+                            $('#reorder').val('');
+                            $('#reorder').prop('readonly', false);
+                            $('#prod_stock').val('');
+                            $('#prod_stock').prop('readonly', false);
+                            $('#edbtn').css('display', 'none');
+                            $('#update').css('display', 'none');
+                            $('#add').css('display', 'block');
+                        }
                     }
                 }
             });
