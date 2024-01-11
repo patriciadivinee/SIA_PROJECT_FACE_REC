@@ -178,7 +178,7 @@ def user_login(request):
 
 def logout_emp(request):
     logout(request)
-    return redirect("user_login")
+    return redirect('user_login')
 
 @login_required(login_url='user_login')
 @emp_access
@@ -557,8 +557,8 @@ def purchase_history(request):
             return render(request, 'base/purchase_history.html', {'purchase_history': purchase_history, 'suppliers': suppliers})
 
     if start_date and end_date:
-        start_date = datetime.strptime(start_date, '%Y-%m-%d')
-        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        start_date = datetime.datetime.strptime(str(start_date), '%Y-%m-%d')
+        end_date = datetime.datetime.strptime(str(end_date), '%Y-%m-%d')
         purchase_history = purchase_history.filter(po_created_at__date__range=(start_date, end_date))
 
     if not suppliers:
@@ -817,22 +817,25 @@ def add_inventory(request):
     if request.method == 'POST':
         fk = request.POST.get('search_id')
         inv_qoh = request.POST.get('prod_stock')
+        rp = request.POST.get('reorder')
         try:
             inv_item = Inventory.objects.get(prod_id=fk)
             new_stock = inv_item.inv_qoh + int(inv_qoh)
             inv_item.inv_qoh = new_stock
+            inv_item.inv_reorder = rp
             inv_item.save()
             
             # messages.error(request,'Product already exist in inventory')
         except Inventory.DoesNotExist:
             inv = Inventory(request.POST)
 
-            if int(inv_qoh) <= 50:
+            if int(inv_qoh) <= int(rp):
                 inv.inv_status = 'Low Stock'
 
             prod_id = Product.objects.get(pk=fk)
             prod_id.prod_status = 'Available'
 
+            inv.inv_reorder = rp
             inv.inv_qoh = inv_qoh
             inv.prod_id = prod_id
 

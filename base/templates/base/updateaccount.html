@@ -5,15 +5,9 @@
 <div class="d-flex align-items-center">
     <div class="mx-auto col-10 col-md-8 col-lg-6">
         <form id="my-form1" class="row g-3" method="POST" enctype="multipart/form-data" action="{% url 'update_employee' emp_id=employee.emp_id %}" >
-            <h2>Update Account</h2>
+            <h2>Update Account: Employee {{ employee.emp_id}}</h2>
             {% csrf_token %}
-            <br>
-            <div class="d-flex justify-content-end mb-3">
-                <div>
-                    <a href="{% url 'viewaccount' %}" class="btn btn-primary" style="margin-right:5px">Back</a>
-                    <button type="submit" class="btn btn-primary">Update</button>
-                </div>
-            </div>
+        
             <br>
                     <div class="col-md-4">
                         <label for="firstname" class="form-label">Firstname</label>
@@ -44,7 +38,7 @@
                     </div>
                     <div class="col-md-4">
                         <label for="can_access" class="form-label">Password</label><br>
-                        <input type="text" class="form-control" id="password" name="password" value="{{employee.emp_password}}" readonly required/>
+                        <input type="password" class="form-control" id="password" name="password" value="{{employee.emp_password}}" readonly required/>
                     </div>
 
                     <div class="col-md-3">
@@ -100,9 +94,15 @@
                         <img src="/media/{{employee.emp_image}}" class="img img-responsive" style="width: 100px; height: 100px;">
                         {% endif %}
                     </div>  
+                    <div class="col-md-6 mt-4">
+                        <a href="{% url 'viewaccount' %}" class="btn btn-primary" style="margin-right:5px">Back</a>
+                    </div>
+                    <div class="col-md-6 mt-4 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
         </form>
     </div>
-</div
+</div>
 <script src="{% static 'scripts/required_validationv2.js' %}"></script>
 
 {% endblock content %}

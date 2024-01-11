@@ -113,6 +113,8 @@ class Inventory(models.Model):
     inv_qoh = models.IntegerField(null=False)
     inv_status = models.CharField(max_length=15, null=False, default='In Stock')
     inv_updated_at = models.DateTimeField(auto_now=True)
+    inv_reorder = models.IntegerField(null=False)
+
 
     class Meta:
         db_table = 'inventory'

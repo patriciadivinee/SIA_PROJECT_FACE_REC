@@ -69,9 +69,11 @@
                         <a href="{% url 'viewaccount' %}" class="btn btn-primary" style="margin-right:5px">Back</a>
                         <button type="submit" class="btn btn-primary">Register</button>
                     </div>
+                    {% if user.is_superuser %}
                     <div class="col-6 d-flex justify-content-end">
                         <button type="submit" id="register-superadmin" class="btn btn-primary" style="margin-right:5px">Register as Superadmin</button>
                     </div>
+                    {% endif %}
         </form>
     </div>
 </div>

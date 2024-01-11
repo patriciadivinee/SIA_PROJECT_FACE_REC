@@ -123,7 +123,7 @@
                     <i class="fa-regular pe-2 fa-clock"></i>
                     <span style="margin-right: 6px;" id="formattedDateTime"></span>
                 </div>
-                {% if user.is_staff %}
+                {% if user.is_staff or user.is_superuser %}
                 <div class="col-sm mx-3">
                     <!-- Notification Bell with Dropdown (moved to the left) -->
                     <div class="dropdown">
@@ -156,15 +156,52 @@
                                 {% if pending_requisitions %}
                                     <ul class="list-group">
                                         {% for requisition in pending_requisitions %}
-                                            <li class="list-group-item item-info"><a href="{% url 'pending_request_items' requisition.req_id  %}" >Requisition by {{ requisition.emp_id.emp_fname }} {{ requisition.emp_id.emp_lname }}: {{ requisition.req_comments }}</a></li>
+                                            <li class="list-group-item item-info"><a href="{% url 'pending_request_items' requisition.req_id  %}" >Requisition no. {{ requisition.req_id }} by {{ requisition.emp_id.emp_fname }} {{ requisition.emp_id.emp_lname }}</a><br>
+                                                <span style="font-size: x-small; margin-top: 0px;">{{ requisition.req_created_at }}</span></li>
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
-            
-                                {% if pending_purchase_orders %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-sm mx-3">
+                    <!-- Notification Bell with Dropdown (moved to the left) -->
+                    <div class="dropdown">
+                        <a class="text-light" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Notifications">
+                            <i class="fas fa-bell" style="font-size: 20px; color: #4a8af0"></i>
+                            {% if emp_count %}
+                                <span class="total">{{ emp_count }}</span>
+                            {% endif %}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+                            <!-- Notification List Dropdown Content -->
+                            <div id="notification-list" class="notification-list">
+                                <h6 class="item-title">Notifications</h6>
+                                {% if app_requisitions %}
                                     <ul class="list-group">
-                                        {% for purchase_order in pending_purchase_orders %}
-                                            <li class="list-group-item item-info"><a href="{% url 'view_po_items' purchase_order.po_id  %}">Purchase Order for {{ purchase_order.req_id.emp_id.emp_fname }} {{ purchase_order.req_id.emp_id.emp_lname }} created on {{ purchase_order.po_created_at }}</a></li>
+                                        {% for requisition in app_requisitions %}
+                                            <li class="list-group-item item-info"><a href="{% url 'view_request_items' requisition.req_id  %}" >Requisition no. {{ requisition.req_id }} was approved.</a><br>
+                                                <span style="font-size: x-small; margin-top: 0px;">{{ requisition.req_approved_date }}</span></li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+
+                                {% if rec_requisitions %}
+                                    <ul class="list-group">
+                                        {% for requisition in rec_requisitions %}
+                                            <li class="list-group-item item-info"><a href="{% url 'view_request_items' requisition.req_id  %}" >Requisition no. {{ requisition.req_id }} was received.</a><br>
+                                                <span style="font-size: x-small; margin-top: 0px;">{{ requisition.req_received_date }}</span></li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+
+                                {% if rej_requisitions %}
+                                    <ul class="list-group">
+                                        {% for requisition in rej_requisitions %}
+                                            <li class="list-group-item item-info"><a href="{% url 'view_request_items' requisition.req_id  %}" >Requisition no. {{ requisition.req_id }} was rejected.</a>
+                                                </li>
                                         {% endfor %}
                                     </ul>
                                 {% endif %}

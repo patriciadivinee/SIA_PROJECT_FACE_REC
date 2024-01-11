@@ -40,10 +40,12 @@
               <div class="w-100 text-center">
                 <button type="submit" class="btn btn-primary rounded submit">Login</button>
               </div>
+              {% if superadmin %}
               {% if superadmin == 0 %}
               <div class="w-100 text-center">
                 <a href="{% url 'superview' %}">Create Superuser</a>
               </div>
+              {% endif %}
               {% endif %}
             </div>
           </form>
