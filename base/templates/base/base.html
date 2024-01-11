@@ -32,63 +32,13 @@
                 <!-- Sidebar Navigation -->
                 {% if request.user.is_authenticated %}
                     <div class="profile">
-                        {% if not user.is_superuser %}
-                            {% if user.emp.emp_image %}
                             <img src="{{ user.emp.emp_image.url }}" alt="Avatar" class="avatar">
                             <h5>{{user.first_name}} {{user.last_name}}</h5>
-                            {% else %}
-                                <img src="/static/images/user (1).png" alt="Avatar" class="avatar">
-                            {% endif %}
-                        <p>Staff</p>
-                        <a href="{% url 'edit_profile' %}" class="btn btn-outline-light btn-sm">Edit Profile</a>
-                        </div>
-                            <li class="sidebar-item">
-                                <a href="{% url 'home' %}" class="sidebar-link {% if nav == 'home' %}active{% endif %}">
-                                    <i class="fa-solid fa-house fa-sm pe-2"></i>
-                                    Home
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                            </li>
-                            <li class="sidebar-item">
-                                {% if not user.is_superuser %}
-                                <a href="{% url 'emp_requisition' req_status='approved' %}" class="sidebar-link {% if nav == 'requisition' %}active{% endif %}">
-                                    <i class="fa-solid fa-file-invoice pe-2"></i>
-                                    Requisition
-                                </a>
-                                {% else %}
-                                <a href="{% url 'admin_requisition' req_status='pending' %}" class="sidebar-link {% if nav == 'requisition' %}active{% endif %}">
-                                    <i class="fa-solid fa-file-invoice pe-2"></i>
-                                    Requisition
-                                </a>
-                                {% endif %}
-                            </li>
-                            <li class="sidebar-item">
-                            </li>
-                            <li class="sidebar-item">
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="/products/list" class="sidebar-link {% if nav == 'product' %}active{% endif %}">
-                                    <i class="fa-solid fa-basket-shopping pe-2"></i>
-                                    Products
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                            </li>
-                            <li class="sidebar-item">
-                            </li>
-                            <li class="sidebar-item pt-4">
-                                <a href="{% url 'logout_emp' %}" class="sidebar-link">
-                                    <i class="fa-solid fa-arrow-right-from-bracket pe-2"></i>
-                                    Log Out
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                        {% else %}
-                            <img src="{{ user.emp.emp_image.url }}" alt="Avatar" class="avatar">
-                            <h5>{{user.first_name}} {{user.last_name}}</h5>
+                            {% if user.is_staff or user.is_superuser %}
                             <p>Administrator</p>
+                            {% else %}
+                            <p>Staff</p>
+                            {% endif %}
                             <a href="{% url 'edit_profile' %}" class="btn btn-outline-light btn-sm">Edit Profile</a>
                             </div>
                                 <li class="sidebar-item">
@@ -97,14 +47,16 @@
                                         Home
                                     </a>
                                 </li>
+                                {% if user.is_staff or user.is_superuser %}
                                 <li class="sidebar-item">
                                     <a href="{% url 'inventory' inv_status='in stock' %}" class="sidebar-link {% if nav == 'inventory' %}active{% endif %}">
                                         <i class="fa-solid fa-warehouse fa-sm pe-2"></i>
                                         Inventory
                                     </a>
                                 </li>
+                                {% endif %}
                                 <li class="sidebar-item">
-                                    {% if not user.is_superuser %}
+                                    {% if not user.is_superuser and not user.is_staff %}
                                     <a href="{% url 'emp_requisition' req_status='approved' %}" class="sidebar-link {% if nav == 'requisition' %}active{% endif %}">
                                         <i class="fa-solid fa-file-invoice pe-2"></i>
                                         Requisition
@@ -116,24 +68,29 @@
                                     </a>
                                     {% endif %}
                                 </li>
+                                {% if user.is_staff or user.is_superuser %}
                                 <li class="sidebar-item">
                                     <a href="{% url 'purchase_order' po_status='pending' %}" class="sidebar-link {% if nav == 'po' %}active{% endif %}">
                                         <i class="fa-solid fa-file-invoice-dollar pe-2"></i>
                                         Purchase Order
                                     </a>
                                 </li>
+                                {% endif %}
+                                {% if user.is_staff or user.is_superuser %}
                                 <li class="sidebar-item">
                                     <a href="/supplier/list" class="sidebar-link {% if nav == 'supplier' %}active{% endif %}">
                                         <i class="fa-solid fa-truck-fast pe-2"></i>
                                         Suppliers
                                     </a>
                                 </li>
+                                {% endif %}
                                 <li class="sidebar-item">
                                     <a href="/products/list" class="sidebar-link {% if nav == 'product' %}active{% endif %}">
                                         <i class="fa-solid fa-basket-shopping pe-2"></i>
                                         Products
                                     </a>
                                 </li>
+                                {% if user.is_staff or user.is_superuser %}
                                 <li class="sidebar-item">
                                     <a href="/products/category" class="sidebar-link {% if nav == 'category' %}active{% endif %}">
                                         <i class="fa-solid fa-tag pe-2"></i>
@@ -146,6 +103,7 @@
                                         Staffs
                                     </a>
                                 </li>
+                                {% endif %}
                                 <li class="sidebar-item pt-4">
                                     <a href="{% url 'logout_emp' %}" class="sidebar-link">
                                         <i class="fa-solid fa-arrow-right-from-bracket pe-2"></i>
@@ -155,7 +113,6 @@
                             </ul>
                             {% endif %}
                     </div>
-                    {% endif %}
                     
         </aside>    
         <!-- Main Component -->
@@ -166,6 +123,7 @@
                     <i class="fa-regular pe-2 fa-clock"></i>
                     <span style="margin-right: 6px;" id="formattedDateTime"></span>
                 </div>
+                {% if user.is_staff %}
                 <div class="col-sm mx-3">
                     <!-- Notification Bell with Dropdown (moved to the left) -->
                     <div class="dropdown">
@@ -214,6 +172,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
             </nav>
             <main id="wrapper" class="content px-3 pt-2">
                 {% if messages %}

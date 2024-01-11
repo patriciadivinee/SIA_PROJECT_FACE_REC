@@ -181,6 +181,7 @@ def logout_emp(request):
     return redirect("user_login")
 
 @login_required(login_url='user_login')
+@emp_access
 @csrf_exempt
 def create_employee_and_user(request, is_superuser=False):
     try:
@@ -264,6 +265,7 @@ def create_employee_and_user(request, is_superuser=False):
 
 def superview(request):
     return render(request, 'base/register_admin.html')
+
 def create_superuser(request):
     try:
         if request.method == 'POST':
@@ -343,9 +345,11 @@ def create_superuser(request):
         messages.error(request, 'Email already exists')
         return redirect('superview')
 
+@emp_access
 def register(request):
     return create_employee_and_user(request, is_superuser=False)
 
+@emp_access
 def register_superuser(request):
     return create_employee_and_user(request, is_superuser=True)
 
@@ -372,6 +376,7 @@ def send_welcome_email(employee):
         print('Error sending welcome email:', e)
 
 @login_required(login_url='user_login')
+@emp_access
 def register_acc(request):
     return render(request, 'base/register.html', {'nav': 'employee'})
 
@@ -384,6 +389,7 @@ def viewaccount(request):
     return render(request, 'base/employee_lists.html', context)
 
 @login_required(login_url='user_login')
+@emp_access
 def edit_employee(request, emp_id):
     employee = Employee.objects.get(emp_id=emp_id)
     user = employee.customuser  
@@ -393,6 +399,7 @@ def edit_employee(request, emp_id):
     return render(request, 'base/updateaccount.html', context)
 
 @login_required(login_url='user_login')
+@emp_access
 def delete(request, emp_id):
     employee = get_object_or_404(Employee, emp_id = emp_id)
     user = CustomUser.objects.filter(emp=employee).first()
@@ -403,6 +410,7 @@ def delete(request, emp_id):
     return redirect('viewaccount')
 
 @login_required(login_url='user_login')
+@emp_access
 def update(request, emp_id):
     try:
         employee = Employee.objects.get(emp_id=emp_id)
@@ -490,6 +498,7 @@ def update(request, emp_id):
         return redirect('update_employee', emp_id=employee.emp_id)
 
 @login_required(login_url='user_login')
+@emp_access
 def employee_details(request, emp_id):
     try:
         employee = Employee.objects.get(emp_id=emp_id)
@@ -500,12 +509,14 @@ def employee_details(request, emp_id):
     return render(request, 'base/employeedeets.html', context)
 
 @login_required(login_url='user_login')
+@emp_access
 def retrieve_view(request):
     employees = Employee.objects.filter(emp_status = False)
     context ={'employees': employees}
     return render(request, 'base/retrieve_emp.html', context)
 
 @login_required(login_url='user_login')
+@emp_access
 def retrieve_emp(request, emp_id):
     employee = get_object_or_404(Employee, emp_id=emp_id)
     user = CustomUser.objects.filter(emp=employee).first()
@@ -528,6 +539,8 @@ def product_list(request):
 
     return render(request, 'base/product_list.html', {'prods': prod_list, 'nav': nav})
 
+@login_required(login_url='user_login')
+@emp_access
 def purchase_history(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
@@ -568,6 +581,7 @@ def custom_title_format(title):
     return ' '.join(modified_words)
 
 @login_required(login_url='user_login')
+@emp_access
 def add_product(request):
     if request.method == 'POST':
         brand_ = request.POST.get('prod_brand').strip()
@@ -607,12 +621,14 @@ def add_product(request):
         return render(request, 'base/add_product.html')
 
 @login_required(login_url='user_login')
+@emp_access
 def view_form_product(request):
     cat_list = Category.objects.all()
 
     return render(request, 'base/add_product.html', {'cat_list': cat_list, 'nav': 'product'})
 
 @login_required(login_url='user_login')
+@emp_access
 def edit_product(request, prod_id):
     cat_list = Category.objects.all()
 
@@ -695,6 +711,7 @@ def edit_product(request, prod_id):
         return render(request, 'base/error.html')
 
 @login_required(login_url='user_login')
+@emp_access
 def delete_product(request, prod_id):
     try:
         prod = Product.objects.get(prod_id = prod_id)
@@ -704,6 +721,7 @@ def delete_product(request, prod_id):
                 messages.error(request, 'Cannot discontinue product with more than 0 stock.')
             else:
                 prod.prod_status = 'Discontinued'
+                inv.delete()
                 prod.save()
             return redirect('products')
         except Inventory.DoesNotExist:
@@ -713,7 +731,8 @@ def delete_product(request, prod_id):
     except Product.DoesNotExist:
         return render(request, 'base/error.html')
 
-@login_required(login_url='user_login')    
+@login_required(login_url='user_login')
+@emp_access
 def delete_category(request, cat_id):
     try:
         prod = Category.objects.get(cat_id = cat_id)
@@ -723,6 +742,7 @@ def delete_category(request, cat_id):
         return render(request, 'base/error.html')
 
 @login_required(login_url='user_login')
+@emp_access
 def category_view(request):
         
     cat_prod = Product.objects.all()
@@ -733,6 +753,7 @@ def category_view(request):
     return render(request, 'base/category.html', {'cat_list': cat_list, 'cat_prod' : cat_prod, 'nav': nav})
 
 @login_required(login_url='user_login')
+@emp_access
 def category_add(request):
     if request.method == 'POST':
         if 'save' in request.POST:
@@ -777,6 +798,7 @@ def product_details(request, prod_id):
         return render(request, 'base/error.html')
 
 @login_required(login_url='user_login')
+@emp_access
 @csrf_exempt
 def search_product(request):
     if request.method == 'POST':
@@ -790,7 +812,7 @@ def search_product(request):
     return JsonResponse({'error': 'Invalid request method'})
 
 @login_required(login_url='user_login')
-# @emp_access
+@emp_access
 def add_inventory(request):
     if request.method == 'POST':
         fk = request.POST.get('search_id')
@@ -822,7 +844,7 @@ def add_inventory(request):
 
 
 @login_required(login_url='user_login')
-# @emp_access
+@emp_access
 def inventory(request, inv_status):
     status = inv_status.title()
     if inv_status == 'in stock':
@@ -932,6 +954,7 @@ def add_req(request):
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @login_required(login_url='user_login')
+@emp_access
 def viewpendingrequest(request, req_id):
     req = Requisition.objects.get(pk=req_id)
     req_items = RequisitionItem.objects.filter(req_id=req).select_related('prod_id')
@@ -970,6 +993,7 @@ def view_request_items(request, req_id):
         return render(request, 'base/error.html')
 
 @login_required(login_url='user_login')
+@emp_access
 def admin_requisition_view(request, req_status):
     status = req_status.upper()
     try:
@@ -997,6 +1021,7 @@ def admin_requisition_view(request, req_status):
     return render(request, 'base/admin_req_view.html')
 
 @login_required(login_url='user_login')
+@emp_access
 def view_pending_request_items(request, req_id):
     req = Requisition.objects.get(pk=req_id)
     req_items = RequisitionItem.objects.filter(req_id=req).select_related('prod_id')
@@ -1018,6 +1043,7 @@ def view_pending_request_items(request, req_id):
     })
 
 @login_required(login_url='user_login')
+@emp_access
 # @csrf_exempt
 def requisition_approval(request):
     if request.method == 'POST':
@@ -1049,6 +1075,7 @@ def requisition_approval(request):
         return HttpResponse('invalid_request_page')
 
 @login_required(login_url='user_login')
+@emp_access
 @csrf_exempt
 def mark_received(request):
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -1104,13 +1131,15 @@ def update_inventory(requisition_item):
         # Handle if Inventory item doesn't exist
         return False
 
-@login_required(login_url='user_login')    
+@login_required(login_url='user_login')   
+@emp_access 
 def supplier_list(request):
     sup = Supplier.objects.all()
     context = {'sup': sup, 'nav': 'supplier'}
     return render(request, "base/supplier_lists.html", context)
 
 @login_required(login_url='user_login')
+@emp_access
 def add_sup(request):
     try:
         if request.method == "POST":
@@ -1133,6 +1162,7 @@ def add_sup(request):
     return render(request, "base/add_supplier.html", {'nav': 'supplier'})
 
 @login_required(login_url='user_login')
+@emp_access
 def add_contact(request, sup_id):
     try:
         if request.method == "POST":
@@ -1162,6 +1192,7 @@ def add_contact(request, sup_id):
     return render(request, "base/add_contact.html", {'sup_id': sup_id, 'nav': 'supplier'})
 
 @login_required(login_url='user_login') 
+@emp_access
 def edit_contact(request, sup_id, cont_id):
     sup = Contact.objects.get(cont_per_id = cont_id)
 
@@ -1169,6 +1200,7 @@ def edit_contact(request, sup_id, cont_id):
     return render(request, 'base/update_contact.html', context)
 
 @login_required(login_url='user_login') 
+@emp_access
 def update_contact(request, cont_id):
     try:
         sup_id = request.POST['supmen']
@@ -1187,6 +1219,7 @@ def update_contact(request, cont_id):
 
 
 @login_required(login_url='user_login')
+@emp_access
 def sup_details(request, sup_id):
     try:
         contact = Contact.objects.get(Q(sup_id=sup_id) & Q(cont_per_status='Active'))
@@ -1206,6 +1239,7 @@ def sup_details(request, sup_id):
     return render(request, "base/supplier_details.html", context)
 
 @login_required(login_url='user_login')
+@emp_access
 def deact_contact(request, cont_id):
     try:
         contact = Contact.objects.get(pk=cont_id)
@@ -1217,6 +1251,7 @@ def deact_contact(request, cont_id):
         return render(request, 'base/error.html')
 
 @login_required(login_url='user_login')
+@emp_access
 def activate_contact(request, cont_id):
     try:
         cont = Contact.objects.get(pk=cont_id)
@@ -1235,6 +1270,7 @@ def activate_contact(request, cont_id):
         return render(request, 'base/error.html')
 
 @login_required(login_url='user_login')    
+@emp_access
 def activate_supplier(request, sup_id):
     try:
         sup = Supplier.objects.get(pk=sup_id)
@@ -1246,6 +1282,7 @@ def activate_supplier(request, sup_id):
         return render(request, 'base/error.html')
     
 @login_required(login_url='user_login')
+@emp_access
 def change_contact(request, sup_id):
     try:
         past_contact = Contact.objects.filter(sup_id=sup_id, cont_per_status='Inactive')
@@ -1259,12 +1296,14 @@ def change_contact(request, sup_id):
         return render(request, 'base/error.html')
 
 @login_required(login_url='user_login')    
+@emp_access
 def edit_supplier(request, sup_id):
     sup = Supplier.objects.get(sup_id = sup_id)
     context={"sup": sup, 'nav': 'supplier'}
     return render(request, 'base/edit_supplier.html', context)
 
 @login_required(login_url='user_login')
+@emp_access
 def add_sup_item(request):
     if request.method == "POST":
         sup_id = request.POST['supmen']
@@ -1295,21 +1334,29 @@ def change_password(request):
     if request.method == 'POST':
         employee = request.user.emp
         new_password = request.POST.get('newpass')
+        curpass = request.POST.get('curpass')
         confirm_password = request.POST.get('confirmpass')
-        employee.emp_password = new_password
+        oldpass = employee.emp_password
 
-        if new_password and confirm_password and new_password == confirm_password:
-            # Update user password
-            request.user.set_password(new_password)
-            request.user.save()
-            # Update the session to prevent the user from being logged out
-            update_session_auth_hash(request, request.user)
-            messages.success(request, 'Password updated successfully.')
-        elif new_password or confirm_password:
-            messages.error(request, 'Passwords do not match.')
+        if curpass != oldpass:
+            messages.error(request, 'Current password does not match.')
+        else:
+            if new_password and confirm_password and new_password == confirm_password:
+                if curpass == new_password:
+                    messages.error(request, 'New password matched current password.')
+                else:
+                # Update user password
+                    employee.emp_password = new_password
+                    employee.save()
+                    request.user.set_password(new_password)
+                    request.user.save()
+                    # Update the session to prevent the user from being logged out
+                    update_session_auth_hash(request, request.user)
+                    messages.success(request, 'Password updated successfully.')
+            elif new_password or confirm_password:
+                messages.error(request, 'Passwords do not match.')
 
-        employee.save()
-    return redirect('home')
+    return redirect('edit_profile')
 
 @login_required(login_url='user_login')
 def save_profile_changes(request):
@@ -1317,7 +1364,6 @@ def save_profile_changes(request):
         employee = request.user.emp
         employee.emp_fname = request.POST.get('firstname')
         employee.emp_lname = request.POST.get('lastname')
-        employee.emp_gender = request.POST.get('gender')
         employee.emp_email = request.POST.get('email')
         employee.emp_address = request.POST.get('address')
         employee.emp_mobile = request.POST.get('mobile')
@@ -1330,10 +1376,12 @@ def save_profile_changes(request):
                 employee.emp_image = new_image
 
         employee.save()
+        messages.success(request, 'Profile updated!')
 
-    return redirect('home')
+    return redirect('edit_profile')
 
 @login_required(login_url='user_login')
+@emp_access
 def po_list(request, po_status):
     try:
         pstat = po_status.upper()
@@ -1358,12 +1406,14 @@ def po_list(request, po_status):
         return render(request, 'base/error.html')
 
 @login_required(login_url='user_login')
+@emp_access
 def view_po(request):
     sup = Supplier.objects.all()
 
     return render(request, 'base/add_po.html', {'nav': 'po', 'sup' : sup})
 
 @login_required(login_url='user_login')
+@emp_access
 def delete_po(request, po_status, po_id):
     try:
         po = Purchase_Order.objects.get(po_id = po_id)
@@ -1405,6 +1455,7 @@ def search_supplier(request):
     return JsonResponse({'error': 'Invalid request method'})
 
 @login_required(login_url='user_login')
+@emp_access
 def delete_sup(request, sup_id):
     try:
         sup = Supplier.objects.get(sup_id = sup_id)
@@ -1420,7 +1471,8 @@ def delete_sup(request, sup_id):
     except Supplier.DoesNotExist:
         return render(request, 'base/error.html')
 
-@login_required(login_url='user_login')    
+@login_required(login_url='user_login')
+@emp_access    
 def update_supplier(request, sup_id):
     try:
         if request.method == "POST":
@@ -1440,6 +1492,8 @@ def update_supplier(request, sup_id):
         messages.error(request, 'Supplier already exist.')
         return redirect('/supplier/list')
 
+@login_required(login_url='user_login')
+@emp_access    
 def delete_supplier_item(request, sup_id, prod_id):
     try:
         # prod = Product.objects.get(pk=prod_id)
@@ -1452,6 +1506,7 @@ def delete_supplier_item(request, sup_id, prod_id):
         return render(request, 'base/error.html')
 
 @login_required(login_url='user_login')
+@emp_access
 @csrf_exempt
 def add_po(request):
     if request.method == 'POST':
@@ -1495,6 +1550,7 @@ def add_po(request):
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @login_required(login_url='user_login')
+@emp_access
 def view_po_items(request, po_id):
     try:
         po = Purchase_Order.objects.get(po_id=po_id)
@@ -1514,6 +1570,7 @@ def view_po_items(request, po_id):
     return render(request, "base/po_items.html", context)
 
 @login_required(login_url='user_login')
+@emp_access
 def urgent_req_view(request):
     po = RequisitionItem.objects.filter(req_for_purchase=True).values('prod_id').annotate(total_quantity=Sum('req_qty'))  #search for filtering in django #approved_requisitions = Requisition.objects.filter(req_id='Pending')
 
@@ -1550,6 +1607,7 @@ def complete_po(po_id):
         return False
 
 @login_required(login_url='user_login')
+@emp_access
 def cancel_po(request, po_id):
     try:
         po = Purchase_Order.objects.get(pk=po_id)
@@ -1561,11 +1619,12 @@ def cancel_po(request, po_id):
     return redirect('/purchase/order/cancelled/')
 
 @login_required(login_url='user_login')
+@emp_access
 def confirm_po(request):
     if request.method == 'POST':
         poid = request.POST['supmen']
         received_qty_list = request.POST.getlist('rqty')
-
+    
         with transaction.atomic():
             for index, received_qty in enumerate(received_qty_list):
                 po_item_id = request.POST.get(f'po_item_id_{index}')
@@ -1592,9 +1651,25 @@ def confirm_po(request):
                 po_item.save()
 
                 # Update the Inventory
-                inventory = Inventory.objects.get(prod_id=po_item.prod_id)
-                inventory.inv_qoh += qty_change
-                inventory.save()
+                try:
+                    inventory = Inventory.objects.get(prod_id=po_item.prod_id)
+                    inventory.inv_qoh += qty_change
+                    inventory.save()
+                except Inventory.DoesNotExist:
+                    inv = Inventory()
+
+                    if int(received_qty) <= 50:
+                        inv.inv_status = 'Low Stock'
+
+                    prod_id = Product.objects.get(pk=po_item.prod_id.prod_id)
+                    prod_id.prod_status = 'Available'
+
+                    inv.inv_qoh = received_qty
+                    inv.prod_id = prod_id
+
+                    prod_id.save()
+                    inv.save()
+
             # Update the po_status based on po_item_status values
             po_statuses = set(po_item.po_item_status for po_item in Purchase_Order_Item.objects.filter(po_id=poid))
             po = Purchase_Order.objects.get(po_id=poid)

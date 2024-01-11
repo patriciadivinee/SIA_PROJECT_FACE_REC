@@ -65,9 +65,12 @@
                         <input type="file" class="form-control" id="imagefile" name="imagefile" placeholder=""  accept="image/*" required/>
                         <div class="error"></div>
                     </div>
-                    <div class="col-12">
+                    <div class="col-6">
                         <a href="{% url 'viewaccount' %}" class="btn btn-primary" style="margin-right:5px">Back</a>
                         <button type="submit" class="btn btn-primary">Register</button>
+                    </div>
+                    <div class="col-6 d-flex justify-content-end">
+                        <button type="submit" id="register-superadmin" class="btn btn-primary" style="margin-right:5px">Register as Superadmin</button>
                     </div>
         </form>
     </div>
@@ -75,15 +78,26 @@
 <script src="{% static 'scripts/required_validation.js' %}"></script>
 <script>
     $(document).ready(function() {
-        $("#my_form").submit(function(event) {
+        $("#register-superadmin").click(function() {
+            $("#my-form").attr("action", "{% url 'register_superuser' %}");
+        });
+
+        $("#my-form").submit(function(event) {
             event.preventDefault();  // Prevent the default form submission
 
-            // Serialize form data
+            // Check if the image file is selected
+            var imageFile = $("#imagefile").val();
+            if (!imageFile) {
+                alert("Please upload an image.");
+                return;  // Do not proceed with form submission
+            }
+
             var formData = $(this).serialize();
+            var url = $(this).attr("action");
 
             $.ajax({
                 type: 'POST',
-                url: '/register',  // Adjust the URL to match your Django view
+                url: url,
                 data: formData,
                 dataType: 'json',
                 success: function(data) {

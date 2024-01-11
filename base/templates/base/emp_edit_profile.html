@@ -51,7 +51,7 @@
             <div class="d-flex justify-content-end mb-3">
                 <div class="col-md-6">
                     <button type="submit" class="btn btn-primary">Update</button>
-                    <button type="button" class="btn btn-outline-primary" onclick="window.history.back()">Cancel</button>
+                    <a href="{% url 'home' %}" class="btn btn-outline-primary">Cancel</a>
                 </div>
                 <div class="col-md-6 d-flex justify-content-end">
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Change Password</button>
@@ -71,9 +71,9 @@
                 <form class="row g-3" id="stock_form" method="post" action="{% url 'change_password' %}">
                   {% csrf_token %}
                   <div class="col-md-12">
-                    <label for="oldPassword">Old Password</label>
+                    <label for="oldPassword">Current Password</label>
                     <div class="input-group">
-                        <input id="oldPassword" type="password" placeholder="Old Password" class="form-control" aria-describedby="inputGroupPrepend" value="{{ user.emp.emp_password }}" spellcheck="false" name="oldpassword"required readonly/>
+                        <input id="oldPassword" type="password" placeholder="Old Password" name="curpass" class="form-control" aria-describedby="inputGroupPrepend" spellcheck="false" required/>
                         <div class="input-group-append">
                             <button class="btn btn-outline-primary toggle" type="button" onclick="togglePassword('oldPassword')">
                                 <i class="fa-regular fa-eye"></i>
