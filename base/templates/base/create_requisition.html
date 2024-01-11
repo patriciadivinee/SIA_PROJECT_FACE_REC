@@ -50,7 +50,7 @@
                         <tbody>
                             {% if prod %}
                             {% for pcat in prod %}
-                            {% if pcat.inv_qoh is not none %}
+                            {% if pcat.inv_qoh is not none and pcat.prod_status != 'Discontinued' %}
                             <tr>
                                 <td>{{ pcat.prod_id }}</td>
                                 <td>{{ pcat.prod_brand }}</td>
@@ -108,5 +108,9 @@
 <script src='https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js'></script>
 <script src='https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js'></script>
+{% if not user.is_superuser or not user.is_staff %}
 <script src="{% static 'scripts/add_requist.js' %}"></script>
+{% else %}
+<script src="{% static 'scripts/admin_add_req.js' %}"></script>
+{% endif %}
 {% endblock content %}
