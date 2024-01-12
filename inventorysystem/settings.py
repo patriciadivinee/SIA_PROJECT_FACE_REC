@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'inventorysystem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'sia_proj',
+        'NAME': 'emerging',
         'USER': 'postgres',
         'PASSWORD': '030130',
         'HOST': 'localhost'
