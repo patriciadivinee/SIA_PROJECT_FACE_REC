@@ -9,7 +9,16 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   
   <link rel="stylesheet" href="{% static 'css/login.css' %}">
-</head>
+    <script src="{% static 'jquery/jquery-3.6.4.min.js' %}"></script>
+    <script src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
+<style>
+  .not-visible {
+    display: none;
+}
+.visible {
+    display: block;
+}
+</style>
 <body>
 <section class="ftco-section">
   <div class="container">
@@ -40,22 +49,24 @@
               <div class="w-100 text-center">
                 <button type="submit" class="btn btn-primary rounded submit">Login</button>
               </div>
-              {% if superadmin %}
+              <div class="w-100 text-center py-2">
+                <a href="{% url 'face_login' %}" class="forgot-password-link">Login with face ID</a>
+              </button>
               {% if superadmin == 0 %}
               <div class="w-100 text-center">
                 <a href="{% url 'superview' %}">Create Superuser</a>
               </div>
               {% endif %}
-              {% endif %}
             </div>
           </form>
-          <script src="{% static 'js/jquery.min.js' %}"></script>
-          <script src="{% static 'js/popper.min.js' %}"></script>
-          <script src="{% static 'js/bootstrap.min.js' %}"></script>
         </div>
       </div>
     </div>
   </div>
 </section>
+<script src="{% static 'jquery/jquery.min.js' %}"></script>
+<script src='https://code.jquery.com/jquery-3.7.0.js'></script>
+<script src="{% static 'jquery/popper.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
 </body>
 </html>

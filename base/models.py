@@ -62,6 +62,7 @@ class Employee(models.Model):
     emp_status = models.BooleanField(default=True)
     emp_created_at = models.DateField(auto_now_add=True)
     emp_updated_at = models.DateField(auto_now = True)
+    face_id_enabled = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'employee'
@@ -82,6 +83,15 @@ class CustomUser(AbstractUser):
     
     def __str__(self):
         return self.email
+    
+class Log(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True)
+    photo = models.ImageField(upload_to='logs/')
+    is_correct = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.id)
 
 class Category(models.Model):
     cat_id = models.BigAutoField(primary_key=True, editable=False)

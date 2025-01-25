@@ -1,0 +1,66 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="d-flex align-items-center">
+    <div class="mx-auto col-10 col-md-8 col-lg-6">
+        <form id="my-form" method="POST" enctype="multipart/form-data" action="{% url 'save_profile_changes' %}" class="row g-3">
+            <h2>Personal Information</h2>
+            {% csrf_token %}
+                <center>
+                <img src="{{ user.emp.emp_image.url }}" style="width: 150px; height: 150px;"><br>
+                <label>Employee No.</label> <label>{{user.emp.emp_id}}</label><br>
+            </center> <br>
+            <div class="col-md-4">
+                <label for="firstname" class="form-label">Firstname</label>
+                <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Firstname" value="{{employee.emp_fname}}" required readonly/>
+            </div>
+            <div class="col-md-4">
+                <label for="lastname" class="form-label">Lastname</label>
+                <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Lastname" value="{{employee.emp_lname}}" required readonly/>
+            </div>
+            <div class="col-md-4">
+                <label for="gender" class="form-label">Gender</label>
+                <input type="text" class="form-control" value="{{employee.emp_gender}}" readonly>
+            </div>
+            <div class="col-md-12">
+                <label for="emailaddress" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="emailaddress" name="email" placeholder="beautyki@gmail.com"  value="{{employee.emp_email}}" required readonly/>
+            </div>
+            <div class="col-md-12">
+                <label for="address" class="form-label">Address</label>
+                <input type="text" class="form-control" id="address" name="address" placeholder="Street/Barangay/Municipality/Province" value="{{employee.emp_address }}"required readonly/>
+            </div>
+            <div class="col-md-12">
+                <label for="mobile" class="form-label">Mobile Number</label>
+                <input type="number" class="form-control" id="mobile" name="mobile" placeholder="+69XXXXXXXXXX" value="{{employee.emp_mobile}}" required readonly/>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-5">
+                      <label type="text" class="form-control-plaintext">Face Login</label>
+                    </div>
+                    <div class="col-md-1">
+                        <label type="text" class="form-control-plaintext">
+                            {% if employee.face_id_enabled == True %}
+                            Enabled
+                            {% else %}
+                            Disabled
+                            {% endif %}
+                        </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 d-flex justify-content-end">
+                    {% if employee.face_id_enabled == True %}
+                        <a href="{% url 'disable' employee.emp_id %}" class="btn btn-primary">Disable</a>
+                        {% else %}
+                        <a href="{% url 'enable' employee.emp_id %}" class="btn btn-primary">Enable</a>
+                        {% endif %}
+                </div>
+            </div>   
+        </form>
+    </div>
+</div>
+{% endblock content %}

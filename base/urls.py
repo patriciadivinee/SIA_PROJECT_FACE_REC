@@ -24,6 +24,7 @@ urlpatterns = [
     path('employee/register_superuser', views.register_superuser, name='register_superuser'),    
     path('employee/register', views.register, name='register'),
     path('user_login', views.user_login, name='user_login'),
+    path('face/login', views.face_login, name='face_login'),
     path('employee/logout', views.logout_emp, name='logout_emp'),
     path('employee/<int:emp_id>/edit', views.edit_employee, name='edit_employee'),
     path('edit_profile', views.edit_profile, name='edit_profile'),
@@ -73,6 +74,10 @@ urlpatterns = [
     path('forgot_pass', views.forgot_pass, name='forgot_pass'),
     path('custom_password_reset', views.custom_password_reset, name='custom_password_reset'),
     path('reset/<uidb64>/<token>/', views.password_reset_confirm,  name='password_reset_confirm'),
+    path('face/verified', views.face_recognition_view,  name='face_recognition'),
+    path('employee/details', views.emp_details,  name='emp_details'),
+    path('employee/<int:emp_id>/enable/face/rec', views.enable_face_rec,  name='enable'),
+    path('employee/<int:emp_id>/disablbe/face/rec', views.disable_face_rec,  name='disable'),
 ]
 
 if settings.DEBUG:

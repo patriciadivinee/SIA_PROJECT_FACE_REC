@@ -1,3 +1,5 @@
+import atexit
+import base64
 from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -5,10 +7,14 @@ from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import render, redirect
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, StreamingHttpResponse
 from django.utils.http import urlsafe_base64_decode
 import datetime
+from .utils import is_ajax, classify_face
+from django.core.files.base import ContentFile
+import threading
 import re
+import cv2
 import json
 from django.db.models import Sum, F, Count
 from django.utils import timezone
@@ -34,9 +40,11 @@ from django.core.exceptions import ValidationError
 import random
 import string
 import os
+import face_recognition
 
 # Create your views here.
 @login_required(login_url='user_login')
+@login_required(login_url='face_recognition')
 def home(request):
     employee = request.user.emp
     thirty_days_ago = timezone.now() - timedelta(days=30) #for top 5 most requested product
@@ -164,7 +172,7 @@ def user_login(request):
         password = request.POST.get('password')
 
         user = authenticate(request, email=email, password=password)
-        print(user)
+        print(email, ' ', password)
         if user is not None:
             login(request, user)
             return redirect('home')
@@ -539,8 +547,8 @@ def product_list(request):
 
     return render(request, 'base/product_list.html', {'prods': prod_list, 'nav': nav})
 
-@login_required(login_url='user_login')
-@emp_access
+# @login_required(login_url='user_login')
+# @emp_access
 def purchase_history(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
@@ -1747,3 +1755,75 @@ def password_reset_confirm(request, uidb64, token):
         else:
             return render(request, 'base/forgot_pass_change.html', {'uidb64': uidb64, 'token': token})
     return render(request, 'base/forgot_pass_change.html', {'uidb64': uidb64, 'token': token})
+
+def face_login(request):
+    return render(request, 'base/face_login.html')
+
+def emp_details(request):
+    employee = request.user.emp
+    context = {'user': request.user, 'employee': employee}
+    return render(request, 'base/emp_detail_face.html', context)
+
+def enable_face_rec(request, emp_id):
+    try:
+        employee = Employee.objects.get(emp_id=emp_id)
+        employee.face_id_enabled = True
+        employee.save()
+        return redirect('emp_details')
+    except Employee.DoesNotExist:
+        return render(request, 'base/error.html')
+    
+def disable_face_rec(request, emp_id):
+    try:
+        employee = Employee.objects.get(emp_id=emp_id)
+        employee.face_id_enabled = False
+        employee.save()
+        return redirect('emp_details')
+    except Employee.DoesNotExist:
+        return render(request, 'base/error.html')
+
+@csrf_exempt
+def face_recognition_view(request):
+    if is_ajax(request):
+        email = request.POST.get('emailaddress')
+        try:
+            emp = Employee.objects.get(emp_email = email) #objects to check
+        
+            enabled = emp.face_id_enabled
+            if enabled:
+                password = emp.emp_password
+
+                uploaded_image = request.POST.get('face-reco')
+
+                _, str_img = uploaded_image.split(';base64')
+                decoded_file = base64.b64decode(str_img)
+
+
+                x = Log()
+                x.photo.save('upload.png', ContentFile(decoded_file)) #from save to close
+                x.save()
+
+                res = classify_face(x.photo.path, email)
+
+                print(res)
+
+                if res:
+                    if res[0]:
+                        user = authenticate(request, email=email, password=password)
+                        if user is not None:
+                            print(user)
+                            login(request, user)   #erased
+                            data = {'success': True}
+                            return JsonResponse(data)
+                        else:
+                            return JsonResponse({'success': False})
+                    else:
+                        return JsonResponse({'success': False})
+                else: 
+                    return JsonResponse({'success': False})
+        except Employee.DoesNotExist:
+            return JsonResponse({'success': False})
+    else:
+        return JsonResponse({'success': False})
+
+    return redirect('face_login')

@@ -33,7 +33,7 @@
                 {% if request.user.is_authenticated %}
                     <div class="profile">
                             <img src="{{ user.emp.emp_image.url }}" alt="Avatar" class="avatar">
-                            <h5>{{user.first_name}} {{user.last_name}}</h5>
+                            <a href="{% url 'emp_details' %}" class="h5">{{user.first_name}} {{user.last_name}}</a>
                             {% if user.is_staff or user.is_superuser %}
                             <p>Administrator</p>
                             {% else %}

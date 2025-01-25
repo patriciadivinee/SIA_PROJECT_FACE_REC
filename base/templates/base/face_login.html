@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Login</title>
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <script src="{% static 'jquery/jquery-3.6.4.min.js' %}"></script>
+    <script src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'jquery/face-api.min.js' %}"></script>
+    <script src="{% static 'scripts/facerecc.js' %}"></script>
+<style>
+  .not-visible {
+    display: none;
+}
+.visible {
+    display: block;
+}
+.image-container {
+            position: relative;
+        }
+
+        .image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+        }
+
+        canvas {
+      position: absolute;
+    }
+</style>
+<body>
+<section class="ftco-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-7 col-lg-5">
+        <div class="login-wrap p-4 p-md-5">
+          <div class="d-flex">
+            <div class="w-100">
+              <h3 class="mb-4">Sign In</h3>
+            </div>
+          </div>
+          <form class="login-form" action="{% url 'face_recognition' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+              <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-user"></span></div>
+              <input type="text" class="form-control rounded-left" placeholder="Email" id="emailaddress" name="emailaddress" required>
+            </div>
+            <div class="w-100 text-center">
+              <p id="message"></p>
+            </div>
+            <div class="form-group mt-4">
+              <div class="w-100 text-center">
+                <img src="{% static  'images/face-scan.png' %}" alt="Image 2" width="20%" height="20%">
+              </div>
+              <div class="w-100 text-center pt-3">
+                <button type="button" class="btn btn-primary rounded submit" id="show_face" onclick="openModal()" >Use Face ID</button>
+              </div>
+              <div class="w-100 text-center py-2">
+                <a href="{% url 'user_login' %}" class="forgot-password-link">Login with password</a>
+              </button>
+              {% if superadmin == 0 %}
+              <div class="w-100 text-center">
+                <a href="{% url 'superview' %}">Create Superuser</a>
+              </div>
+              {% endif %}
+          
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Verify</h5>
+                <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span class="fa fa-times"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+              <div class="d-flex justify-content-center align-items-center" id="vid-div">
+                <video src="" autoplay="true" id="video-element"></video>
+            </div>
+        
+            <div id="img-element" class="text-center">
+                <img name="face-rec" id="face-rec">
+            </div>
+              </form>
+          </div>
+        </div>
+    </div>
+</section>
+<script src="{% static 'jquery/jquery.min.js' %}"></script>
+<script src='https://code.jquery.com/jquery-3.7.0.js'></script>
+<script src="{% static 'jquery/popper.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+</body>
+</html>
